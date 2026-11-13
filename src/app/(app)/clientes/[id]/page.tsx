@@ -15,7 +15,8 @@ import { idSchema, whatsappLink } from "@/features/clients/schemas";
 import { QuickPayButton } from "@/features/transactions/components/quick-pay-button";
 import { StatusPill } from "@/features/transactions/components/status-pill";
 import type { TransactionRow } from "@/features/transactions/queries";
-import { requireUser } from "@/lib/auth/session";
+import { getViewContext } from "@/lib/auth/view";
+import { RowLink } from "@/components/layout/row-link";
 import { formatDateBR } from "@/lib/dates";
 import { formatBRL } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -59,13 +60,13 @@ function Stat({
 export default async function ClientePage({
   params,
 }: PageProps<"/clientes/[id]">) {
-  const user = await requireUser();
+  const ctx = await getViewContext();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
 
   const [client, rows] = await Promise.all([
-    getClient(user.id, id),
-    listClientTransactions(user.id, id),
+    getClient(ctx.ownerId, id),
+    listClientTransactions(ctx.ownerId, id),
   ]);
   if (!client) notFound();
 
@@ -102,22 +103,26 @@ export default async function ClientePage({
               </a>
             </Button>
           ) : null}
-          <Button
-            asChild
-            variant="outline"
-            size="icon"
-            aria-label="Editar cliente"
-          >
-            <Link href={`/clientes/${client.id}/editar`}>
-              <Pencil aria-hidden />
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href={`/clientes/${client.id}/venda`}>
-              <Plus strokeWidth={2.5} aria-hidden />
-              Nova venda
-            </Link>
-          </Button>
+          {ctx.readOnly ? null : (
+            <Button
+              asChild
+              variant="outline"
+              size="icon"
+              aria-label="Editar cliente"
+            >
+              <Link href={`/clientes/${client.id}/editar`}>
+                <Pencil aria-hidden />
+              </Link>
+            </Button>
+          )}
+          {ctx.readOnly ? null : (
+            <Button asChild>
+              <Link href={`/clientes/${client.id}/venda`}>
+                <Plus strokeWidth={2.5} aria-hidden />
+                Nova venda
+              </Link>
+            </Button>
+          )}
         </div>
       </header>
 
@@ -176,7 +181,8 @@ export default async function ClientePage({
                     key={r.id}
                     className="flex items-center gap-3 border-b border-divider px-4 py-3 last:border-b-0"
                   >
-                    <Link
+                    <RowLink
+                      readOnly={ctx.readOnly}
                       href={`/lancamentos/${r.id}`}
                       className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
@@ -207,7 +213,7 @@ export default async function ClientePage({
                         </span>
                       </div>
                       <StatusPill status={r.effective_status} type="income" />
-                    </Link>
+                    </RowLink>
                     {r.status !== "paid" ? (
                       <QuickPayButton id={r.id} label="Receber" />
                     ) : null}
@@ -220,12 +226,14 @@ export default async function ClientePage({
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-input bg-card px-6 py-12 text-center">
           <p className="text-[15px]">Nenhuma venda para {client.name} ainda.</p>
-          <Button asChild variant="outline">
-            <Link href={`/clientes/${client.id}/venda`}>
-              <Plus aria-hidden />
-              Registrar venda
-            </Link>
-          </Button>
+          {ctx.readOnly ? null : (
+            <Button asChild variant="outline">
+              <Link href={`/clientes/${client.id}/venda`}>
+                <Plus aria-hidden />
+                Registrar venda
+              </Link>
+            </Button>
+          )}
         </div>
       )}
 

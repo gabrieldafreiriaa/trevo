@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/brand/logo";
+import { ViewAsSelect } from "@/features/admin/components/view-as-select";
 import { signOut } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,9 @@ import { Avatar } from "./user-badge";
 type SidebarProps = {
   fullName: string;
   isAdmin: boolean;
+  selfId: string;
+  ownerId: string;
+  people: { id: string; full_name: string }[];
 };
 
 function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
@@ -40,7 +44,13 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
 }
 
 /** Menu lateral (só no computador, a partir de 1024px). */
-export function Sidebar({ fullName, isAdmin }: SidebarProps) {
+export function Sidebar({
+  fullName,
+  isAdmin,
+  selfId,
+  ownerId,
+  people,
+}: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -66,7 +76,18 @@ export function Sidebar({ fullName, isAdmin }: SidebarProps) {
         </nav>
       ) : null}
 
-      <div className="mt-auto flex items-center gap-2.5 border-t border-divider px-1 pt-4">
+      {isAdmin && people.length > 1 ? (
+        <div className="mt-auto">
+          <ViewAsSelect selfId={selfId} ownerId={ownerId} people={people} />
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          "flex items-center gap-2.5 border-t border-divider px-1 pt-4",
+          !(isAdmin && people.length > 1) && "mt-auto",
+        )}
+      >
         <Avatar name={fullName} />
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-medium">{fullName}</span>

@@ -13,14 +13,14 @@ import { RecurrenceForm } from "@/features/recurrences/components/recurrence-for
 import { getRecurrence } from "@/features/recurrences/queries";
 import { idSchema } from "@/features/recurrences/schemas";
 import { getOptions } from "@/features/transactions/queries";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Editar conta fixa" };
 
 export default async function EditarRecorrentePage({
   params,
 }: PageProps<"/recorrentes/[id]">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
 

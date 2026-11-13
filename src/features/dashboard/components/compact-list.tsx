@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { RowLink } from "@/components/layout/row-link";
 import { CategoryIcon } from "@/features/categories/components/category-badge";
 import { QuickPayButton } from "@/features/transactions/components/quick-pay-button";
 import { StatusPill } from "@/features/transactions/components/status-pill";
@@ -19,6 +20,7 @@ export function CompactList({
   empty,
   mode,
   href,
+  readOnly = false,
 }: {
   title: string;
   rows: TransactionRow[];
@@ -26,6 +28,7 @@ export function CompactList({
   empty: string;
   mode: "upcoming" | "recent";
   href: string;
+  readOnly?: boolean;
 }) {
   const categories = new Map(options.categories.map((c) => [c.id, c]));
   const clients = new Map(options.clients.map((c) => [c.id, c.name]));
@@ -52,7 +55,8 @@ export function CompactList({
                 key={t.id}
                 className="flex items-center gap-3 border-t border-divider py-3.5 first:border-t-0 sm:gap-4"
               >
-                <Link
+                <RowLink
+                  readOnly={readOnly}
                   href={`/lancamentos/${t.id}`}
                   className="flex min-w-0 flex-1 items-center gap-3.5"
                 >
@@ -104,8 +108,8 @@ export function CompactList({
                       <StatusPill status={t.effective_status} type={t.type} />
                     ) : null}
                   </div>
-                </Link>
-                {mode === "upcoming" ? (
+                </RowLink>
+                {mode === "upcoming" && !readOnly ? (
                   <QuickPayButton
                     id={t.id}
                     label={income ? "Receber" : "Pagar"}

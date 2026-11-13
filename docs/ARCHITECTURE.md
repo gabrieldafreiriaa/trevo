@@ -93,7 +93,7 @@ Next.js na Vercel (Node)
 1. **Login** por e-mail e senha com `@supabase/ssr`, com a sessão em cookies.
 2. O **proxy** (`src/proxy.ts`, nome novo do middleware no Next 16) renova a sessão e redireciona para `/login` qualquer acesso a `(app)` sem sessão.
 3. **Convite:** em `admin/usuarios`, uma action confere se quem chama tem `profiles.role = 'admin'` e chama `auth.admin.inviteUserByEmail` com a **service role** (cliente criado só no servidor). Um trigger em `auth.users` cria o `profile` e semeia as categorias e formas de pagamento padrão.
-4. **Visão do admin:** o seletor "Visualizando o painel de" define o `userId` exibido (parâmetro de URL `?u=<id>`). As queries filtram por esse id. O RLS permite que o admin leia e bloqueia qualquer escrita em dados alheios. Nesse modo, a interface mostra um aviso de "somente leitura" e esconde as ações de editar.
+4. **Visão do admin:** o seletor "Visualizando o painel de" grava o id escolhido no cookie httpOnly `trevo_view_as` (12 h), lido por `getViewContext()` em `lib/auth/view.ts`. As queries filtram por `ownerId`, e as telas de criar/editar chamam `requireWritable()`, que volta ao início no modo leitura. O RLS permite que o admin leia e bloqueia qualquer escrita em dados alheios. Nesse modo, a interface mostra um aviso de "somente leitura" e esconde as ações de editar.
 
 ## Fluxos de domínio
 

@@ -3,21 +3,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { RowLink } from "@/components/layout/row-link";
 import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/features/categories/components/category-badge";
 import { listRecurrences } from "@/features/recurrences/queries";
 import { getOptions } from "@/features/transactions/queries";
-import { requireUser } from "@/lib/auth/session";
+import { getViewContext } from "@/lib/auth/view";
 import { formatBRL } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Recorrentes" };
 
 export default async function RecorrentesPage() {
-  const user = await requireUser();
+  const ctx = await getViewContext();
   const [rules, options] = await Promise.all([
-    listRecurrences(user.id),
-    getOptions(user.id),
+    listRecurrences(ctx.ownerId),
+    getOptions(ctx.ownerId),
   ]);
   const categories = new Map(options.categories.map((c) => [c.id, c]));
   const methods = new Map(options.paymentMethods.map((p) => [p.id, p]));
@@ -35,12 +36,14 @@ export default async function RecorrentesPage() {
         title="Recorrentes"
         description="Contas fixas que se repetem todo mês. Os próximos 3 meses já aparecem como previstos."
         actions={
-          <Button asChild>
-            <Link href="/recorrentes/nova">
-              <Plus strokeWidth={2.5} aria-hidden />
-              Nova conta fixa
-            </Link>
-          </Button>
+          ctx.readOnly ? null : (
+            <Button asChild>
+              <Link href="/recorrentes/nova">
+                <Plus strokeWidth={2.5} aria-hidden />
+                Nova conta fixa
+              </Link>
+            </Button>
+          )
         }
       />
 
@@ -76,7 +79,8 @@ export default async function RecorrentesPage() {
                   key={r.id}
                   className="border-b border-divider last:border-b-0"
                 >
-                  <Link
+                  <RowLink
+                    readOnly={ctx.readOnly}
                     href={`/recorrentes/${r.id}`}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 hover:bg-secondary",
@@ -123,7 +127,7 @@ export default async function RecorrentesPage() {
                       className="size-4 text-muted-foreground"
                       aria-hidden
                     />
-                  </Link>
+                  </RowLink>
                 </li>
               );
             })}
@@ -132,15 +136,18 @@ export default async function RecorrentesPage() {
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-input bg-card px-6 py-12 text-center">
           <p className="max-w-sm text-[15px]">
-            Cadastre aluguel, internet, salário e outras contas que se repetem.
-            O Trevo lança sozinho todo mês.
+            {ctx.readOnly
+              ? "Nenhuma conta recorrente cadastrada."
+              : "Cadastre aluguel, internet, salário e outras contas que se repetem. O Trevo lança sozinho todo mês."}
           </p>
-          <Button asChild variant="outline">
-            <Link href="/recorrentes/nova">
-              <Plus aria-hidden />
-              Cadastrar a primeira
-            </Link>
-          </Button>
+          {ctx.readOnly ? null : (
+            <Button asChild variant="outline">
+              <Link href="/recorrentes/nova">
+                <Plus aria-hidden />
+                Cadastrar a primeira
+              </Link>
+            </Button>
+          )}
         </div>
       )}
     </>

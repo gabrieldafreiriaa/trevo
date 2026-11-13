@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { RowLink } from "@/components/layout/row-link";
 import { Button } from "@/components/ui/button";
 import { PaymentMethodIcon } from "@/features/payment-methods/components/payment-method-icon";
 import { PAYMENT_KINDS } from "@/features/payment-methods/constants";
@@ -10,14 +11,21 @@ import {
   listPaymentMethods,
   type PaymentMethod,
 } from "@/features/payment-methods/queries";
-import { requireUser } from "@/lib/auth/session";
+import { getViewContext } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Formas de pagamento" };
 
-function Row({ method }: { method: PaymentMethod }) {
+function Row({
+  method,
+  readOnly,
+}: {
+  method: PaymentMethod;
+  readOnly: boolean;
+}) {
   const kindLabel = PAYMENT_KINDS[method.kind].label;
   return (
-    <Link
+    <RowLink
+      readOnly={readOnly}
       href={`/formas-de-pagamento/${method.id}`}
       className="flex h-16 items-center gap-3 border-b border-divider px-4 last:border-b-0 hover:bg-secondary"
     >
@@ -28,14 +36,16 @@ function Row({ method }: { method: PaymentMethod }) {
           <span className="text-xs text-muted-foreground">{kindLabel}</span>
         ) : null}
       </div>
-      <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
-    </Link>
+      {readOnly ? null : (
+        <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+      )}
+    </RowLink>
   );
 }
 
 export default async function FormasDePagamentoPage() {
-  const user = await requireUser();
-  const { active, archived } = await listPaymentMethods(user.id);
+  const ctx = await getViewContext();
+  const { active, archived } = await listPaymentMethods(ctx.ownerId);
 
   return (
     <>
@@ -43,24 +53,28 @@ export default async function FormasDePagamentoPage() {
         title="Formas de pagamento"
         description="Como você pagou ou recebeu: cartão, Pix, dinheiro…"
         actions={
-          <Button asChild>
-            <Link href="/formas-de-pagamento/nova">
-              <Plus strokeWidth={2.5} aria-hidden />
-              Nova forma
-            </Link>
-          </Button>
+          ctx.readOnly ? null : (
+            <Button asChild>
+              <Link href="/formas-de-pagamento/nova">
+                <Plus strokeWidth={2.5} aria-hidden />
+                Nova forma
+              </Link>
+            </Button>
+          )
         }
       />
 
       {active.length ? (
         <div className="overflow-hidden rounded-card border bg-card">
           {active.map((m) => (
-            <Row key={m.id} method={m} />
+            <Row key={m.id} method={m} readOnly={ctx.readOnly} />
           ))}
         </div>
       ) : (
         <p className="rounded-card border border-dashed border-input bg-card px-6 py-10 text-center text-sm text-muted-foreground">
-          Nenhuma forma de pagamento ativa. Crie a primeira no botão acima.
+          {ctx.readOnly
+            ? "Nenhuma forma de pagamento ativa."
+            : "Nenhuma forma de pagamento ativa. Crie a primeira no botão acima."}
         </p>
       )}
 
@@ -71,7 +85,7 @@ export default async function FormasDePagamentoPage() {
           </summary>
           <div className="mt-3 overflow-hidden rounded-card border bg-card opacity-80">
             {archived.map((m) => (
-              <Row key={m.id} method={m} />
+              <Row key={m.id} method={m} readOnly={ctx.readOnly} />
             ))}
           </div>
         </details>

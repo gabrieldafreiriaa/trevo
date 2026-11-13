@@ -13,7 +13,7 @@ import {
 import { TransactionForm } from "@/features/transactions/components/transaction-form";
 import { getOptions, getTransaction } from "@/features/transactions/queries";
 import { idSchema } from "@/features/transactions/schemas";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 import { monthOf } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Editar lançamento" };
@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Editar lançamento" };
 export default async function EditarLancamentoPage({
   params,
 }: PageProps<"/lancamentos/[id]">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
 

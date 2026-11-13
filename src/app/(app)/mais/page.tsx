@@ -6,13 +6,17 @@ import { PageHeader } from "@/components/layout/page-header";
 import { adminNav, mainNav } from "@/components/layout/nav-items";
 import { Avatar } from "@/components/layout/user-badge";
 import { signOut } from "@/features/auth/actions";
-import { requireUser } from "@/lib/auth/session";
+import { ViewAsSelect } from "@/features/admin/components/view-as-select";
+import { listProfiles } from "@/features/admin/queries";
+import { getViewContext } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Mais" };
 
 /** Menu completo no celular (no computador, o menu lateral já mostra tudo). */
 export default async function MaisPage() {
-  const user = await requireUser();
+  const ctx = await getViewContext();
+  const user = ctx.user;
+  const people = user.isAdmin ? await listProfiles() : [];
   const items = [
     ...mainNav.filter(
       (i) => !["/", "/lancamentos", "/clientes"].includes(i.href),
@@ -33,6 +37,16 @@ export default async function MaisPage() {
           </span>
         </div>
       </div>
+
+      {user.isAdmin && people.length > 1 ? (
+        <div className="rounded-card border bg-card p-4">
+          <ViewAsSelect
+            selfId={user.id}
+            ownerId={ctx.ownerId}
+            people={people}
+          />
+        </div>
+      ) : null}
 
       <nav
         aria-label="Outras seções"

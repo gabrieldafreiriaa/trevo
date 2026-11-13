@@ -12,14 +12,14 @@ import {
 import { ClientForm } from "@/features/clients/components/client-form";
 import { getClient } from "@/features/clients/queries";
 import { idSchema } from "@/features/clients/schemas";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Editar cliente" };
 
 export default async function EditarClientePage({
   params,
 }: PageProps<"/clientes/[id]/editar">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
   const client = await getClient(user.id, id);

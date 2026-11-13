@@ -8,7 +8,7 @@ import { SaleForm } from "@/features/clients/components/sale-form";
 import { getClient } from "@/features/clients/queries";
 import { idSchema } from "@/features/clients/schemas";
 import { getOptions } from "@/features/transactions/queries";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 import { addMonths, today } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Nova venda" };
@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Nova venda" };
 export default async function NovaVendaPage({
   params,
 }: PageProps<"/clientes/[id]/venda">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
   const [client, options] = await Promise.all([

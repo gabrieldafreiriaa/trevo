@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { requireWritable } from "@/lib/auth/view";
+
 import { BackLink } from "@/components/layout/back-link";
 import { PageHeader } from "@/components/layout/page-header";
 import { createCategory } from "@/features/categories/actions";
@@ -16,6 +18,7 @@ export const metadata: Metadata = { title: "Nova categoria" };
 export default async function NovaCategoriaPage({
   searchParams,
 }: PageProps<"/categorias/nova">) {
+  await requireWritable();
   const type = typeFromParam((await searchParams).tipo);
 
   return (

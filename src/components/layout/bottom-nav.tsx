@@ -42,7 +42,7 @@ function Tab({
 }
 
 /** Barra inferior (só no celular e tablet, abaixo de 1024px). */
-export function BottomNav() {
+export function BottomNav({ readOnly = false }: { readOnly?: boolean }) {
   const pathname = usePathname();
   return (
     <nav
@@ -52,13 +52,17 @@ export function BottomNav() {
       {left.map((item) => (
         <Tab key={item.href} item={item} pathname={pathname} />
       ))}
-      <Link
-        href="/lancamentos/novo"
-        aria-label="Novo lançamento"
-        className="-mt-7 flex size-[60px] items-center justify-center rounded-[20px] border-4 border-background bg-primary text-primary-foreground"
-      >
-        <Plus className="size-[26px]" strokeWidth={2.6} aria-hidden />
-      </Link>
+      {readOnly ? (
+        <span className="w-[60px]" aria-hidden />
+      ) : (
+        <Link
+          href="/lancamentos/novo"
+          aria-label="Novo lançamento"
+          className="-mt-7 flex size-[60px] items-center justify-center rounded-[20px] border-4 border-background bg-primary text-primary-foreground"
+        >
+          <Plus className="size-[26px]" strokeWidth={2.6} aria-hidden />
+        </Link>
+      )}
       {right.map((item) => (
         <Tab key={item.href} item={item} pathname={pathname} />
       ))}

@@ -12,14 +12,14 @@ import {
 import { PaymentMethodForm } from "@/features/payment-methods/components/payment-method-form";
 import { getPaymentMethod } from "@/features/payment-methods/queries";
 import { idSchema } from "@/features/payment-methods/schemas";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Editar forma de pagamento" };
 
 export default async function EditarFormaPage({
   params,
 }: PageProps<"/formas-de-pagamento/[id]">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
 

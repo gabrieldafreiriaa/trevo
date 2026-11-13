@@ -14,7 +14,7 @@ import { MonthlyChart } from "@/features/dashboard/components/monthly-chart";
 import { FlowCard } from "@/features/dashboard/components/stat-card";
 import { balanceChange, getDashboard } from "@/features/dashboard/queries";
 import { PAYMENT_KINDS } from "@/features/payment-methods/constants";
-import { requireUser } from "@/lib/auth/session";
+import { getViewContext } from "@/lib/auth/view";
 import { currentHour, parseMonthParam } from "@/lib/dates";
 
 function greeting() {
@@ -25,10 +25,10 @@ function greeting() {
 }
 
 export default async function DashboardPage({ searchParams }: PageProps<"/">) {
-  const user = await requireUser();
+  const ctx = await getViewContext();
   const month = parseMonthParam((await searchParams).mes);
-  const firstName = user.fullName.split(" ")[0];
-  const d = await getDashboard(user.id, month);
+  const firstName = ctx.user.fullName.split(" ")[0];
+  const d = await getDashboard(ctx.ownerId, month);
   const s = d.summary;
 
   const balance = s.income_realized - s.expense_realized;
@@ -44,18 +44,22 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
         title={
           <div className="flex flex-col gap-1">
             <span className="text-sm text-muted-foreground">
-              {greeting()}, {firstName}
+              {ctx.readOnly
+                ? `Painel de ${ctx.ownerName}`
+                : `${greeting()}, ${firstName}`}
             </span>
             <MonthSwitcher month={month} />
           </div>
         }
         actions={
-          <Button asChild className="hidden lg:inline-flex">
-            <Link href="/lancamentos/novo">
-              <Plus strokeWidth={2.5} aria-hidden />
-              Novo lançamento
-            </Link>
-          </Button>
+          ctx.readOnly ? null : (
+            <Button asChild className="hidden lg:inline-flex">
+              <Link href="/lancamentos/novo">
+                <Plus strokeWidth={2.5} aria-hidden />
+                Novo lançamento
+              </Link>
+            </Button>
+          )
         }
       />
 
@@ -99,15 +103,18 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
       {empty ? (
         <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-input bg-card px-6 py-12 text-center">
           <p className="max-w-sm text-[15px]">
-            Nenhum lançamento neste mês ainda. Comece registrando uma entrada ou
-            um gasto.
+            {ctx.readOnly
+              ? "Nenhum lançamento neste mês."
+              : "Nenhum lançamento neste mês ainda. Comece registrando uma entrada ou um gasto."}
           </p>
-          <Button asChild variant="outline">
-            <Link href="/lancamentos/novo">
-              <Plus aria-hidden />
-              Novo lançamento
-            </Link>
-          </Button>
+          {ctx.readOnly ? null : (
+            <Button asChild variant="outline">
+              <Link href="/lancamentos/novo">
+                <Plus aria-hidden />
+                Novo lançamento
+              </Link>
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -173,6 +180,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
           rows={d.upcoming}
           options={d.options}
           href="/lancamentos?situacao=pendente"
+          readOnly={ctx.readOnly}
           empty="Nada para pagar ou receber nos próximos 15 dias."
         />
         <CompactList
@@ -181,6 +189,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/">) {
           rows={d.recent}
           options={d.options}
           href="/lancamentos"
+          readOnly={ctx.readOnly}
           empty="Nenhum lançamento pago ainda."
         />
       </div>

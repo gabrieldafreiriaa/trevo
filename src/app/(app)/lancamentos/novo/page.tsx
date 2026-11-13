@@ -6,7 +6,7 @@ import { createTransaction } from "@/features/transactions/actions";
 import { TransactionForm } from "@/features/transactions/components/transaction-form";
 import { getOptions } from "@/features/transactions/queries";
 import { typeFromParam } from "@/features/transactions/status";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 import { isValidISODate, today } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Novo lançamento" };
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Novo lançamento" };
 export default async function NovoLancamentoPage({
   searchParams,
 }: PageProps<"/lancamentos/novo">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const params = await searchParams;
   const options = await getOptions(user.id);
   const type = typeFromParam(params.tipo) ?? "expense";

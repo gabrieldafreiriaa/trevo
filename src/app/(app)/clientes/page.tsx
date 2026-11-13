@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Avatar } from "@/components/layout/user-badge";
 import { Button } from "@/components/ui/button";
 import { listClients } from "@/features/clients/queries";
-import { requireUser } from "@/lib/auth/session";
+import { getViewContext } from "@/lib/auth/view";
 import { formatDayMonth } from "@/lib/dates";
 import { formatBRL } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Clientes" };
 
 export default async function ClientesPage() {
-  const user = await requireUser();
-  const clients = await listClients(user.id);
+  const ctx = await getViewContext();
+  const clients = await listClients(ctx.ownerId);
   const active = clients.filter((c) => !c.archived_at);
   const archived = clients.filter((c) => c.archived_at);
 
@@ -71,12 +71,14 @@ export default async function ClientesPage() {
         title="Clientes"
         description="Vendas parceladas e quanto cada cliente ainda deve."
         actions={
-          <Button asChild>
-            <Link href="/clientes/novo">
-              <Plus strokeWidth={2.5} aria-hidden />
-              Novo cliente
-            </Link>
-          </Button>
+          ctx.readOnly ? null : (
+            <Button asChild>
+              <Link href="/clientes/novo">
+                <Plus strokeWidth={2.5} aria-hidden />
+                Novo cliente
+              </Link>
+            </Button>
+          )
         }
       />
 
@@ -132,15 +134,18 @@ export default async function ClientesPage() {
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-input bg-card px-6 py-12 text-center">
           <p className="max-w-sm text-[15px]">
-            Cadastre quem compra de você parcelado. O Trevo acompanha cada
-            parcela, os atrasos e os juros.
+            {ctx.readOnly
+              ? "Nenhum cliente cadastrado."
+              : "Cadastre quem compra de você parcelado. O Trevo acompanha cada parcela, os atrasos e os juros."}
           </p>
-          <Button asChild variant="outline">
-            <Link href="/clientes/novo">
-              <Plus aria-hidden />
-              Cadastrar o primeiro
-            </Link>
-          </Button>
+          {ctx.readOnly ? null : (
+            <Button asChild variant="outline">
+              <Link href="/clientes/novo">
+                <Plus aria-hidden />
+                Cadastrar o primeiro
+              </Link>
+            </Button>
+          )}
         </div>
       )}
 

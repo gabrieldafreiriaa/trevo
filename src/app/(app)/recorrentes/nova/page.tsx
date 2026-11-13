@@ -5,13 +5,13 @@ import { PageHeader } from "@/components/layout/page-header";
 import { createRecurrence } from "@/features/recurrences/actions";
 import { RecurrenceForm } from "@/features/recurrences/components/recurrence-form";
 import { getOptions } from "@/features/transactions/queries";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 import { today } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Nova conta fixa" };
 
 export default async function NovaRecorrentePage() {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const options = await getOptions(user.id);
   const start = today();
 

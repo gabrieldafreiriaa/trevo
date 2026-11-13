@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { RowLink } from "@/components/layout/row-link";
 
 import { CategoryIcon } from "@/features/categories/components/category-badge";
 import { formatDayHeader, formatDayMonth } from "@/lib/dates";
@@ -9,7 +9,11 @@ import type { FormOptions, TransactionRow } from "../queries";
 import { QuickPayButton } from "./quick-pay-button";
 import { StatusPill } from "./status-pill";
 
-type Props = { rows: TransactionRow[]; options: FormOptions };
+type Props = {
+  rows: TransactionRow[];
+  options: FormOptions;
+  readOnly?: boolean;
+};
 
 function groupByDay(rows: TransactionRow[]) {
   const groups = new Map<string, TransactionRow[]>();
@@ -21,7 +25,7 @@ function groupByDay(rows: TransactionRow[]) {
   return [...groups.entries()];
 }
 
-export function TransactionList({ rows, options }: Props) {
+export function TransactionList({ rows, options, readOnly = false }: Props) {
   const categories = new Map(options.categories.map((c) => [c.id, c]));
   const methods = new Map(options.paymentMethods.map((p) => [p.id, p]));
   const clients = new Map(options.clients.map((c) => [c.id, c.name]));
@@ -57,7 +61,8 @@ export function TransactionList({ rows, options }: Props) {
                   key={t.id}
                   className="flex items-center gap-3 border-b border-divider px-4 py-3.5 last:border-b-0 sm:gap-4"
                 >
-                  <Link
+                  <RowLink
+                    readOnly={readOnly}
                     href={`/lancamentos/${t.id}`}
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                   >
@@ -95,8 +100,8 @@ export function TransactionList({ rows, options }: Props) {
                         </span>
                       )}
                     </div>
-                  </Link>
-                  {open ? (
+                  </RowLink>
+                  {open && !readOnly ? (
                     <QuickPayButton
                       id={t.id}
                       label={income ? "Receber" : "Pagar"}

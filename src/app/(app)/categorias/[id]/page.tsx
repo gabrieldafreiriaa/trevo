@@ -13,14 +13,14 @@ import { CategoryForm } from "@/features/categories/components/category-form";
 import { TYPE_PARAM } from "@/features/categories/constants";
 import { getCategory } from "@/features/categories/queries";
 import { idSchema } from "@/features/categories/schemas";
-import { requireUser } from "@/lib/auth/session";
+import { requireWritable } from "@/lib/auth/view";
 
 export const metadata: Metadata = { title: "Editar categoria" };
 
 export default async function EditarCategoriaPage({
   params,
 }: PageProps<"/categorias/[id]">) {
-  const user = await requireUser();
+  const { user } = await requireWritable();
   const { id } = await params;
   if (!idSchema.safeParse(id).success) notFound();
 
