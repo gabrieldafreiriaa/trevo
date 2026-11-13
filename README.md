@@ -2,7 +2,7 @@
 
 Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio login e a própria tela. Os lançamentos são feitos à mão, e o dashboard mostra para onde o dinheiro foi e quanto ainda vai sobrar no mês.
 
-> **Status:** Sprint 0 (fundação) concluído · Sprint 1 (auth e layout) a seguir.
+> **Status:** S0, S1 e S2 concluídos · S3 (lançamentos) a seguir.
 
 ## O que o Trevo faz (v1)
 
@@ -10,6 +10,7 @@ Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio log
 - **Lançamentos de entrada e saída**, cada um com **categoria** e **forma de pagamento** (cartão de crédito, débito, Pix, dinheiro, boleto ou formas personalizadas).
 - **Situação de cada lançamento:** pago/recebido, pendente ou parcial (com o valor já pago). Um lançamento vira **atrasado** sozinho quando passa do vencimento.
 - **Previstos:** contas recorrentes (todo mês) e compras parceladas (gera as parcelas futuras).
+- **Clientes e vendas:** venda parcelada para um cliente (mensal, quinzenal ou a cada N dias), com as parcelas no faturamento previsto, juros combinados por parcela e o carnê de cada cliente.
 - **Dashboard do mês:** saldo realizado e previsto, entradas e saídas, gastos por categoria e por forma de pagamento, últimos 6 meses, próximos vencimentos e últimos lançamentos.
 - **Admin:** visualiza o painel de cada usuário em modo somente leitura e gerencia os convites.
 - **Funciona no celular e no computador**, e pode ser instalado como app (PWA).
@@ -43,11 +44,15 @@ Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio log
 
 ```bash
 pnpm install
-cp .env.example .env.local      # preencha com as chaves do Supabase
-pnpm db:start                   # sobe o Postgres e o Auth locais
-pnpm db:reset                   # aplica as migrations e o seed
+pnpm db:start                   # sobe Postgres, Auth e o Mailpit (Docker)
+cp .env.example .env.local      # cole a "Publishable key"/"anon key" que o db:start mostrou
+pnpm db:reset                   # aplica as migrations e cria os usuários de teste
 pnpm dev                        # http://localhost:3000
 ```
+
+**Usuários de teste** (senha `trevo123`): `gabriel@trevo.local` (admin), `pai@trevo.local` e `namorada@trevo.local`.
+
+**E-mails locais** (convite e "esqueci minha senha") não saem de verdade: abra o Mailpit em http://127.0.0.1:54324.
 
 ### Scripts
 
@@ -59,6 +64,8 @@ pnpm dev                        # http://localhost:3000
 | `pnpm typecheck` | `tsc --noEmit`                                               |
 | `pnpm test`      | Vitest                                                       |
 | `pnpm test:e2e`  | Playwright (a partir do S6)                                  |
+| `pnpm db:test`   | Testes do banco (RLS) com pgTAP, no Supabase local           |
+| `pnpm db:check`  | Migrations + seed + testes do banco **sem Docker** (PGlite)  |
 | `pnpm db:types`  | Gera `src/lib/supabase/database.types.ts` a partir do schema |
 
 ### Variáveis de ambiente

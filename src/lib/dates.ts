@@ -128,3 +128,83 @@ export function formatMonthBR(month: MonthKey): string {
   const { year, month: m } = parseMonthKey(month);
   return monthFormatter.format(new Date(Date.UTC(year, m - 1, 1)));
 }
+
+/** Soma dias corridos a uma data. */
+export function addDays(date: ISODate, amount: number): ISODate {
+  const { year, month, day } = parseISODate(date);
+  if (!Number.isInteger(amount)) {
+    throw new RangeError(`Quantidade de dias inválida: ${amount}`);
+  }
+  const d = new Date(Date.UTC(year, month - 1, day + amount));
+  return toISODate({
+    year: d.getUTCFullYear(),
+    month: d.getUTCMonth() + 1,
+    day: d.getUTCDate(),
+  });
+}
+
+/** Igual ao enum `installment_interval` do banco. */
+export type InstallmentInterval =
+  { kind: "monthly" } | { kind: "biweekly" } | { kind: "days"; every: number };
+
+export const BIWEEKLY_DAYS = 15;
+
+/**
+ * Vencimentos de N parcelas a partir da primeira.
+ * - mensal: mesmo dia de cada mês (ou o último dia, se não existir);
+ * - quinzenal: a cada 15 dias;
+ * - a cada N dias: N de 1 a 365.
+ * Cada data é calculada a partir da PRIMEIRA, nunca da anterior.
+ */
+export function installmentDueDates(
+  first: ISODate,
+  count: number,
+  interval: InstallmentInterval,
+): ISODate[] {
+  parseISODate(first);
+  if (!Number.isInteger(count) || count < 1 || count > 48) {
+    throw new RangeError("Número de parcelas deve ser entre 1 e 48.");
+  }
+  if (
+    interval.kind === "days" &&
+    (!Number.isInteger(interval.every) ||
+      interval.every < 1 ||
+      interval.every > 365)
+  ) {
+    throw new RangeError("O intervalo em dias deve ser entre 1 e 365.");
+  }
+
+  return Array.from({ length: count }, (_, i) => {
+    switch (interval.kind) {
+      case "monthly":
+        return addMonths(first, i);
+      case "biweekly":
+        return addDays(first, i * BIWEEKLY_DAYS);
+      case "days":
+        return addDays(first, i * interval.every);
+    }
+  });
+}
+
+/** Lê o `?mes=` da URL; se vier vazio ou inválido, usa o mês atual. */
+export function parseMonthParam(
+  value: string | string[] | undefined,
+  now: Date = new Date(),
+): MonthKey {
+  if (typeof value === "string") {
+    const m = MONTH_KEY.exec(value);
+    if (m && Number(m[2]) >= 1 && Number(m[2]) <= 12) return value;
+  }
+  return currentMonth(now);
+}
+
+/** Hora atual (0–23) em São Paulo. */
+export function currentHour(now: Date = new Date()): number {
+  return Number(
+    new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      hourCycle: "h23",
+      timeZone: TIME_ZONE,
+    }).format(now),
+  );
+}

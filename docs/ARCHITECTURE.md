@@ -18,19 +18,21 @@ Next.js na Vercel (Node)
 
 ## Decisões técnicas
 
-| #   | Decisão                                               | Motivo                                                                                                                            |
-| --- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Next.js full-stack, sem API separada                  | Um projeto, um deploy, e tipagem do banco até a tela                                                                              |
-| D2  | `supabase-js` + tipos gerados, **sem ORM**            | Drizzle e Prisma conectam direto no Postgres e **ignoram o RLS**. Com o supabase-js, toda consulta passa pelas políticas do banco |
-| D3  | RLS em 100% das tabelas                               | O isolamento entre usuários não pode depender do front-end                                                                        |
-| D4  | Dinheiro como `bigint` em **centavos**                | Evita erros de arredondamento de float. A formatação acontece só na borda (`Intl.NumberFormat('pt-BR')`)                          |
-| D5  | **"Atrasado" é calculado**, não gravado               | Pendente ou parcial com vencimento antes de hoje é atrasado. Não precisa de job nem fica dessincronizado                          |
-| D6  | Parcelas são **materializadas** na criação            | Cada parcela é um lançamento normal: dá pra editar, marcar como paga e ver no mês certo                                           |
-| D7  | Recorrência via `pg_cron`, com janela de 3 meses      | Os previstos aparecem no dashboard sem o usuário fazer nada. A geração é idempotente                                              |
-| D8  | Cadastro público **desligado**                        | Só o admin convida usuários, pela API admin do Supabase (service role usada só no servidor)                                       |
-| D9  | Admin tem **leitura** dos dados de todos, sem escrita | Requisito do produto. Garantido pelo RLS, não pela interface                                                                      |
-| D10 | Fuso fixo `America/Sao_Paulo`                         | "Hoje", "mês atual" e "atrasado" são sempre calculados nesse fuso, no banco e no app                                              |
-| D11 | Forma de pagamento é só um **rótulo** do lançamento   | Não há faturas, saldo por conta nem transferências. O usuário lança cada gasto do cartão com categoria e forma                    |
+| #   | Decisão                                               | Motivo                                                                                                                                                           |
+| --- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Next.js full-stack, sem API separada                  | Um projeto, um deploy, e tipagem do banco até a tela                                                                                                             |
+| D2  | `supabase-js` + tipos gerados, **sem ORM**            | Drizzle e Prisma conectam direto no Postgres e **ignoram o RLS**. Com o supabase-js, toda consulta passa pelas políticas do banco                                |
+| D3  | RLS em 100% das tabelas                               | O isolamento entre usuários não pode depender do front-end                                                                                                       |
+| D4  | Dinheiro como `bigint` em **centavos**                | Evita erros de arredondamento de float. A formatação acontece só na borda (`Intl.NumberFormat('pt-BR')`)                                                         |
+| D5  | **"Atrasado" é calculado**, não gravado               | Pendente ou parcial com vencimento antes de hoje é atrasado. Não precisa de job nem fica dessincronizado                                                         |
+| D6  | Parcelas são **materializadas** na criação            | Cada parcela é um lançamento normal: dá pra editar, marcar como paga e ver no mês certo                                                                          |
+| D7  | Recorrência via `pg_cron`, com janela de 3 meses      | Os previstos aparecem no dashboard sem o usuário fazer nada. A geração é idempotente                                                                             |
+| D8  | Cadastro público **desligado**                        | Só o admin convida usuários, pela API admin do Supabase (service role usada só no servidor)                                                                      |
+| D9  | Admin tem **leitura** dos dados de todos, sem escrita | Requisito do produto. Garantido pelo RLS, não pela interface                                                                                                     |
+| D10 | Fuso fixo `America/Sao_Paulo`                         | "Hoje", "mês atual" e "atrasado" são sempre calculados nesse fuso, no banco e no app                                                                             |
+| D11 | Forma de pagamento é só um **rótulo** do lançamento   | Não há faturas, saldo por conta nem transferências. O usuário lança cada gasto do cartão com categoria e forma                                                   |
+| D12 | **Cache Components desligado** no `next.config.ts`    | Toda tela depende do usuário logado e de dados que mudam a todo momento. A renderização dinâmica clássica é mais simples e é o caminho documentado pelo Supabase |
+| D13 | Papel (`role`) protegido por **privilégio de coluna** | O usuário só tem `UPDATE (full_name)` em `profiles`. Promover alguém a admin só pela service role ou pelo SQL editor                                             |
 
 ## Estrutura de pastas
 
@@ -50,6 +52,7 @@ Next.js na Vercel (Node)
 │  │  │  ├─ page.tsx                 # dashboard
 │  │  │  ├─ lancamentos/
 │  │  │  ├─ recorrentes/
+│  │  │  ├─ clientes/            # lista e carnê de cada cliente
 │  │  │  ├─ categorias/
 │  │  │  ├─ formas-de-pagamento/
 │  │  │  └─ admin/usuarios/
@@ -58,6 +61,7 @@ Next.js na Vercel (Node)
 │  ├─ features/              # um módulo por domínio
 │  │  ├─ transactions/       # actions.ts · queries.ts · schemas.ts · components/
 │  │  ├─ recurrences/
+│  │  ├─ clients/
 │  │  ├─ categories/
 │  │  ├─ payment-methods/
 │  │  ├─ dashboard/
@@ -96,13 +100,20 @@ Next.js na Vercel (Node)
 - Exibida: igual à guardada, exceto que **`overdue`** quando a guardada é `pending` ou `partial` e `due_date < hoje (America/Sao_Paulo)`.
 - Calculada na view `transactions_with_status` (ver `DATA_MODEL.md`) e espelhada em `lib/` para a interface otimista.
 
-### Parcelamento
+### Parcelamento (compras e vendas)
 
-- Entrada: valor total, número de parcelas (2 a 48), data da primeira parcela, categoria e forma de pagamento.
-- A função SQL `create_installments(...)` cria as N linhas numa **única transação**, com o mesmo `installment_group_id`.
-- **Arredondamento:** cada parcela recebe `floor(total / n)` e o resto em centavos vai para a **primeira** parcela. A soma sempre bate com o total.
-- Vencimentos mensais. Se o dia não existe no mês (31 em fevereiro, por exemplo), usa o último dia do mês.
-- Editar ou excluir oferece duas opções: "só esta parcela" ou "esta e as próximas".
+- Entrada: valor total **ou** valor da parcela, número de parcelas (1 a 48), data da primeira parcela, intervalo (`monthly`, `biweekly` = a cada 15 dias, ou `days` = a cada N dias), categoria, forma de pagamento e, para vendas, o cliente.
+- A função SQL `create_installments(...)` cria as N linhas numa **única transação**, com o mesmo `installment_group_id`. Os vencimentos são calculados por `lib/dates.ts → installmentDueDates` (espelhado em SQL).
+- **Arredondamento** (quando o usuário informa o total): cada parcela recebe `floor(total / n)` e o resto em centavos vai para a **primeira**. A soma sempre bate com o total.
+- **Mensal:** se o dia não existe no mês (31 em fevereiro, por exemplo), usa o último dia, e a parcela seguinte volta ao dia original.
+- Depois de criadas, **cada parcela é um lançamento independente**: dá pra mudar a data, o valor e os juros de uma só, sem afetar as outras. Excluir oferece "só esta" ou "esta e as próximas".
+
+### Vendas a clientes e juros
+
+- Uma venda parcelada é um parcelamento de **entrada** com `client_id`. As parcelas entram no **previsto** de cada mês, como faturamento.
+- O sinal (entrada) é um lançamento de entrada comum, já recebido, opcionalmente ligado ao mesmo cliente.
+- **Juros** ficam em `interest_cents`, separados do valor original. O valor devido é `amount_cents + interest_cents`. O usuário digita o valor combinado; o app nunca calcula juros sozinho.
+- O carnê do cliente e os totais (vendido, recebido, a receber, em atraso, juros recebidos) vêm da função `client_balances`.
 
 ### Recorrência
 
@@ -130,7 +141,9 @@ Next.js na Vercel (Node)
 
 - **CI (GitHub Actions) em todo PR:** `lint`, `typecheck`, `test` e `build`.
 - **Vitest** desde o S0 para `lib/money`, `lib/dates`, a divisão de parcelas, a situação efetiva e os agregados do dashboard.
-- **Testes de RLS:** um script SQL que confirma que o usuário A não lê o B, que o admin lê todos e que o admin não escreve nos dados de outro.
+- **Testes de RLS (pgTAP)** em `supabase/tests/database/`: o usuário A não lê o B, o admin lê todos e não escreve nos dados de outro. Rodam de verdade com `pnpm db:test` (Docker) e, numa imitação sem Docker, com `pnpm db:check` (PGlite), que também roda no CI.
+- **Privilégios por coluna:** colunas que não podem mudar (`user_id`, `role`, o `type` da categoria) ficam fora do `GRANT UPDATE`.
+- **Consultas sempre filtram `user_id`:** para o admin, o RLS libera leitura de todos; as telas mostram só os dados do próprio usuário, exceto na visão de admin (S7).
 - **Playwright (S6):** login, criar lançamento, criar parcelado e conferir o dashboard.
 - **Acessibilidade:** contraste AA, alvos de toque de 44 px ou mais, navegação por teclado (o Radix já cobre a maior parte).
 

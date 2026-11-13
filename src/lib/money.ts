@@ -5,7 +5,7 @@
  */
 export type Cents = number;
 
-export const MIN_INSTALLMENTS = 2;
+export const MIN_INSTALLMENTS = 1;
 export const MAX_INSTALLMENTS = 48;
 
 const brl = new Intl.NumberFormat("pt-BR", {

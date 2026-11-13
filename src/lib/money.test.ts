@@ -54,6 +54,10 @@ describe("parseBRL", () => {
 });
 
 describe("splitInstallments", () => {
+  it("uma parcela só (venda a prazo) devolve o total", () => {
+    expect(splitInstallments(130000, 1)).toEqual([130000]);
+  });
+
   it("divide sem resto", () => {
     expect(splitInstallments(124000, 10)).toEqual(Array(10).fill(12400));
   });
@@ -74,7 +78,7 @@ describe("splitInstallments", () => {
   });
 
   it("valida o número de parcelas e o total", () => {
-    expect(() => splitInstallments(1000, 1)).toThrow(RangeError);
+    expect(() => splitInstallments(1000, 0)).toThrow(RangeError);
     expect(() => splitInstallments(1000, 49)).toThrow(RangeError);
     expect(() => splitInstallments(1000, 2.5)).toThrow(RangeError);
     expect(() => splitInstallments(0, 2)).toThrow(RangeError);

@@ -17,3 +17,9 @@ create type public.payment_kind as enum (
   'boleto',
   'other'
 );
+
+create type public.installment_interval as enum (
+  'monthly',  -- mensal (mesmo dia; se não existir, último dia do mês)
+  'biweekly', -- a cada 15 dias
+  'days'      -- a cada N dias (N informado na criação)
+);
