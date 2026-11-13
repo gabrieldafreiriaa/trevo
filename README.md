@@ -2,7 +2,7 @@
 
 Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio login e a própria tela. Os lançamentos são feitos à mão, e o dashboard mostra para onde o dinheiro foi e quanto ainda vai sobrar no mês.
 
-> **Status:** S0 a S5 concluídos · S6 (dashboard) a seguir.
+> **Status:** S0 a S6 concluídos · S7 (admin, PWA e polimento) a seguir.
 
 ## O que o Trevo faz (v1)
 
@@ -17,16 +17,16 @@ Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio log
 
 ## Stack
 
-| Camada           | Tecnologia                                                        |
-| ---------------- | ----------------------------------------------------------------- |
-| App              | Next.js (App Router) + TypeScript (strict), rodando em Node       |
-| UI               | Tailwind CSS + shadcn/ui (Radix) · Recharts · Lucide              |
-| Formulários      | React Hook Form + Zod                                             |
-| Datas e dinheiro | date-fns (pt-BR) · valores sempre em centavos (inteiro)           |
-| Banco e auth     | Supabase: Postgres, Auth, RLS, pg_cron                            |
-| Testes           | Vitest (domínio) · Playwright (fluxos principais, a partir do S6) |
-| CI/CD            | GitHub Actions · Vercel                                           |
-| Pacotes          | pnpm                                                              |
+| Camada           | Tecnologia                                                           |
+| ---------------- | -------------------------------------------------------------------- |
+| App              | Next.js (App Router) + TypeScript (strict), rodando em Node          |
+| UI               | Tailwind CSS + shadcn/ui (Radix) · gráficos próprios em CSS · Lucide |
+| Formulários      | React Hook Form + Zod                                                |
+| Datas e dinheiro | date-fns (pt-BR) · valores sempre em centavos (inteiro)              |
+| Banco e auth     | Supabase: Postgres, Auth, RLS, pg_cron                               |
+| Testes           | Vitest (domínio) · Playwright (fluxos principais, a partir do S6)    |
+| CI/CD            | GitHub Actions · Vercel                                              |
+| Pacotes          | pnpm                                                                 |
 
 ## Documentação
 

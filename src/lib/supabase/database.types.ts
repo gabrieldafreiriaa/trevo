@@ -310,6 +310,34 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean };
       seed_user_defaults: { Args: { p_user: string }; Returns: undefined };
       today_sp: { Args: never; Returns: string };
+      dashboard_summary: {
+        Args: { p_user: string; p_month: string };
+        Returns: {
+          income_realized: number;
+          expense_realized: number;
+          income_due: number;
+          expense_due: number;
+          to_receive: number;
+          to_pay: number;
+          prev_balance_realized: number;
+          overdue_count: number;
+          overdue_cents: number;
+          clients_to_receive: number;
+          clients_overdue: number;
+        }[];
+      };
+      spending_by_category: {
+        Args: { p_user: string; p_month: string };
+        Returns: { category_id: string; total_cents: number }[];
+      };
+      spending_by_payment_method: {
+        Args: { p_user: string; p_month: string };
+        Returns: { payment_method_id: string | null; total_cents: number }[];
+      };
+      monthly_history: {
+        Args: { p_user: string; p_month: string; p_months?: number };
+        Returns: { month: string; income_cents: number; expense_cents: number }[];
+      };
       client_balances: {
         Args: { p_user: string };
         Returns: {

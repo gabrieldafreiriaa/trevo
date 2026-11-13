@@ -17,7 +17,7 @@ Documentação completa:
 
 ## Stack
 
-Next.js (App Router) + TypeScript strict · Tailwind + shadcn/ui · Supabase (Postgres, Auth, RLS, pg_cron) via `@supabase/ssr` e `supabase-js` · React Hook Form + Zod · date-fns · Recharts · Vitest · Playwright · pnpm.
+Next.js (App Router) + TypeScript strict · Tailwind + shadcn/ui · Supabase (Postgres, Auth, RLS, pg_cron) via `@supabase/ssr` e `supabase-js` · React Hook Form + Zod · date-fns · Vitest · Playwright · pnpm.
 
 ## Comandos
 

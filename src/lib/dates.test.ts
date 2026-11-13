@@ -9,6 +9,7 @@ import {
   formatDayHeader,
   formatDayMonth,
   formatMonthBR,
+  formatShortMonth,
   installmentDueDates,
   isValidISODate,
   monthRange,
@@ -184,5 +185,12 @@ describe("formatDayHeader / formatDayMonth", () => {
   it("formata o cabeçalho do dia em pt-BR", () => {
     expect(formatDayHeader("2026-11-12")).toBe("quinta-feira, 12 de novembro");
     expect(formatDayMonth("2026-11-05")).toBe("05/11");
+  });
+});
+
+describe("formatShortMonth", () => {
+  it("abrevia o mês sem ponto", () => {
+    expect(formatShortMonth("2026-11")).toBe("nov");
+    expect(formatShortMonth("2027-03-01")).toBe("mar");
   });
 });

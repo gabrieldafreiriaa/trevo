@@ -32,6 +32,8 @@ Protótipo aprovado (Opção A): [canvas no Claude](https://claude.ai/artifact/T
 | `primary-foreground` | `#04210F` | Texto sobre o `primary`                              |
 | `income`             | `#15803D` | Valores de entrada (texto)                           |
 | `expense`            | `#B91C1C` | Valores de saída (texto)                             |
+| `chart-income`       | `#16A34A` | Colunas de entradas nos gráficos                     |
+| `chart-expense`      | `#6366F1` | Colunas de saídas e barras de gastos nos gráficos    |
 
 ### Situação (pílulas)
 

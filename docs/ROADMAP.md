@@ -101,13 +101,13 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 
 ### S6 — Dashboard
 
-- [ ] Funções `dashboard_summary`, `spending_by_category`, `spending_by_payment_method` e `monthly_history`
-- [ ] Card do saldo (realizado, previsto, a pagar e a receber), cards de entradas e saídas
-- [ ] Bloco "A receber de clientes", com destaque para as parcelas atrasadas
-- [ ] Gastos por categoria e por forma de pagamento
-- [ ] Gráfico dos últimos 6 meses (Recharts)
-- [ ] Próximos vencimentos e últimos lançamentos
-- [ ] Estados vazios e de carregamento
+- [x] Funções `dashboard_summary`, `spending_by_category`, `spending_by_payment_method` e `monthly_history` (10 testes pgTAP)
+- [x] Card do saldo (realizado, previsto, a pagar, a receber e variação contra o mês anterior), cards de entradas e saídas
+- [x] Bloco "A receber de clientes", com destaque para as parcelas atrasadas; aviso de lançamentos atrasados
+- [x] Gastos por categoria e por forma de pagamento (barras; acima de 6 itens, o resto vira "Outros")
+- [x] Gráfico dos últimos 6 meses (CSS próprio, com dica ao passar o mouse e tabela para leitor de tela; cores validadas para daltonismo)
+- [x] Próximos vencimentos (inclui atrasados, com "Pagar"/"Receber") e últimos lançamentos
+- [x] Estados vazios e de carregamento (`loading.tsx`)
 
 **Pronto quando:** o dashboard bate com a lista de lançamentos do mês.
 

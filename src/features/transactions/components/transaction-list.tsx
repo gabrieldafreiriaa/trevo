@@ -55,7 +55,7 @@ export function TransactionList({ rows, options }: Props) {
               return (
                 <li
                   key={t.id}
-                  className="flex items-center gap-3 border-b border-divider px-4 py-3 last:border-b-0"
+                  className="flex items-center gap-3 border-b border-divider px-4 py-3.5 last:border-b-0 sm:gap-4"
                 >
                   <Link
                     href={`/lancamentos/${t.id}`}

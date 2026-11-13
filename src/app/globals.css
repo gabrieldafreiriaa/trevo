@@ -37,6 +37,9 @@
   --graphite-expense: #fca5a5; /* saída sobre fundo grafite */
 
   --income: #15803d;
+  /* Gráficos (validados: contraste ≥ 3:1 e separação para daltonismo) */
+  --chart-income: #16a34a;
+  --chart-expense: #6366f1;
   --expense: #b91c1c;
 
   --status-paid: #dcfce7;
@@ -76,6 +79,8 @@
   --color-graphite-income: var(--graphite-income);
   --color-graphite-expense: var(--graphite-expense);
   --color-income: var(--income);
+  --color-chart-income: var(--chart-income);
+  --color-chart-expense: var(--chart-expense);
   --color-expense: var(--expense);
 
   --color-status-paid: var(--status-paid);

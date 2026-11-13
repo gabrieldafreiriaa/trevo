@@ -226,3 +226,16 @@ export function formatDayHeader(date: ISODate): string {
 export function formatDayMonth(date: ISODate): string {
   return formatDateBR(date).slice(0, 5);
 }
+
+const shortMonthFormatter = new Intl.DateTimeFormat("pt-BR", {
+  month: "short",
+  timeZone: "UTC",
+});
+
+/** "2026-11" ou "2026-11-01" → "nov" */
+export function formatShortMonth(value: string): string {
+  const [y, m] = value.split("-").map(Number);
+  return shortMonthFormatter
+    .format(new Date(Date.UTC(y, m - 1, 1)))
+    .replace(".", "");
+}
