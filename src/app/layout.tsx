@@ -19,10 +19,20 @@ export const metadata: Metadata = {
     template: "%s · Trevo",
   },
   description: "Controle financeiro da família.",
+  applicationName: "Trevo",
+  // iPhone: abre em tela cheia quando adicionado à tela de início.
+  appleWebApp: {
+    capable: true,
+    title: "Trevo",
+    statusBarStyle: "default",
+  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   themeColor: "#f5f6f4",
+  // Ocupa a tela toda no iPhone; a barra de baixo respeita a área segura.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
