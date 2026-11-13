@@ -168,6 +168,8 @@ export async function updateTransaction(
   if (!data) return { error: "Lançamento não encontrado." };
 
   refresh();
+  // Parcela de venda: volta para o carnê do cliente.
+  if (parsed.data.client_id) redirect(`/clientes/${parsed.data.client_id}`);
   backToList(parsed.data.due_date);
 }
 

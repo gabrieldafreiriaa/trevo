@@ -106,3 +106,38 @@ begin
   from generate_series(1, 10) as n;
 end;
 $$;
+
+-- Cliente de exemplo do Gabriel: Pedro comprou uma moto em 5x de R$ 1.300.
+-- 1ª paga, 2ª atrasada com R$ 65 de juros, demais a vencer.
+do $$
+declare
+  g constant uuid := '00000000-0000-4000-8000-000000000001';
+  hoje date := public.today_sp();
+  pedro uuid;
+  grupo uuid := gen_random_uuid();
+  vendas uuid := (select id from public.categories where user_id = g and name = 'Vendas');
+  pix uuid := (select id from public.payment_methods where user_id = g and kind = 'pix');
+begin
+  insert into public.clients (user_id, name, phone, notes)
+  values (g, 'Pedro', '(11) 99999-0000', 'Comprou a CG 160 vermelha.')
+  returning id into pedro;
+
+  insert into public.clients (user_id, name) values (g, 'Mariana');
+
+  -- Entrada da venda: parcela 0 do mesmo grupo.
+  insert into public.transactions (user_id, type, description, amount_cents, status, due_date, category_id, payment_method_id,
+                                   client_id, installment_group_id, installment_number, installment_total)
+  values (g, 'income', 'Moto CG 160', 200000, 'paid', hoje - 45, vendas, pix, pedro, grupo, 0, 5);
+
+  insert into public.transactions (
+    user_id, type, description, amount_cents, interest_cents, status, due_date, category_id, payment_method_id,
+    client_id, installment_group_id, installment_number, installment_total
+  )
+  select g, 'income', 'Moto CG 160', 130000,
+         case when n = 2 then 6500 else 0 end,
+         case when n = 1 then 'paid' else 'pending' end::public.transaction_status,
+         (hoje - 40 + make_interval(months => n - 1))::date,
+         vendas, pix, pedro, grupo, n, 5
+  from generate_series(1, 5) as n;
+end;
+$$;

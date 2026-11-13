@@ -25,7 +25,7 @@ $$;
 -- Padrões ------------------------------------------------------------------
 select is(
   (select count(*) from public.categories where user_id = '00000000-0000-4000-8000-000000000002')::int,
-  16, 'usuário novo recebe 16 categorias padrão'
+  18, 'usuário novo recebe 18 categorias padrão'
 );
 select is(
   (select count(*) from public.payment_methods where user_id = '00000000-0000-4000-8000-000000000002')::int,

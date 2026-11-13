@@ -13,6 +13,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      clients: {
+        Row: {
+          archived_at: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+          notes: string | null;
+          phone: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          archived_at?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+          notes?: string | null;
+          phone?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          notes?: string | null;
+          phone?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       categories: {
         Row: {
           archived_at: string | null;
@@ -141,6 +174,7 @@ export type Database = {
         Row: {
           amount_cents: number;
           category_id: string;
+          client_id: string | null;
           created_at: string;
           description: string;
           due_date: string;
@@ -162,6 +196,7 @@ export type Database = {
         Insert: {
           amount_cents: number;
           category_id: string;
+          client_id?: string | null;
           created_at?: string;
           description: string;
           due_date: string;
@@ -183,6 +218,7 @@ export type Database = {
         Update: {
           amount_cents?: number;
           category_id?: string;
+          client_id?: string | null;
           created_at?: string;
           description?: string;
           due_date?: string;
@@ -265,6 +301,7 @@ export type Database = {
           remaining_cents: number | null;
           effective_status: string | null;
           recurrence_id: string | null;
+          client_id: string | null;
         };
         Relationships: [];
       };
@@ -273,6 +310,20 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean };
       seed_user_defaults: { Args: { p_user: string }; Returns: undefined };
       today_sp: { Args: never; Returns: string };
+      client_balances: {
+        Args: { p_user: string };
+        Returns: {
+          client_id: string;
+          sold_cents: number;
+          interest_cents: number;
+          received_cents: number;
+          remaining_cents: number;
+          overdue_cents: number;
+          overdue_count: number;
+          open_count: number;
+          next_due_date: string | null;
+        }[];
+      };
       generate_recurring_transactions: {
         Args: { p_recurrence?: string };
         Returns: number;

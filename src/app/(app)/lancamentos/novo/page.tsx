@@ -41,6 +41,7 @@ export default async function NovoLancamentoPage({
             description: "",
             category_id: "",
             payment_method_id: "",
+            client_id: typeof params.cliente === "string" ? params.cliente : "",
             due_date: date,
             status: "paid",
             notes: "",

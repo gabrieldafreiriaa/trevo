@@ -121,7 +121,7 @@ Criada pelo trigger `on_auth_user_created`, que também semeia as categorias e f
 | `client_id`                | `uuid`               | opcional, **só para entradas**. FK composta `(client_id, user_id)` → `clients`                                  |
 | `recurrence_id`            | `uuid`               | FK `recurrences(id)` on delete set null                                                                         |
 | `installment_group_id`     | `uuid`               | mesmo valor para todas as parcelas de uma compra ou venda                                                       |
-| `installment_number`       | `smallint`           | 1 a N                                                                                                           |
+| `installment_number`       | `smallint`           | 0 a N (0 = entrada/sinal da venda, no mesmo grupo)                                                              |
 | `installment_total`        | `smallint`           | N, de 1 a 48 (1 = venda a prazo em uma vez, ex.: "paga em 10 dias")                                             |
 | `notes`                    | `text`               | opcional                                                                                                        |
 | `created_at`, `updated_at` | `timestamptz`        |                                                                                                                 |
@@ -164,7 +164,7 @@ Todas as colunas de `transactions` e mais:
 - **A pagar / a receber:** soma de `remaining_cents` dos lançamentos do mês com `status <> 'paid'`.
 - **Pagamento parcial:** o usuário informa quanto já pagou. Se `paid_cents` chegar ao valor devido, o status vira `paid` automaticamente (trigger).
 - **Juros:** o usuário edita a parcela de um mês específico e informa os juros combinados (valor livre). O valor original da parcela não muda, e as outras parcelas não são afetadas. Os juros recebidos somam em "Juros recebidos" no relatório do cliente.
-- **Venda parcelada:** é uma entrada parcelada com `client_id`. A entrada (sinal) é lançada como uma entrada comum, já recebida, e pode ser vinculada ao mesmo cliente.
+- **Venda parcelada:** é uma entrada parcelada com `client_id`. A entrada (sinal), se houver, é cadastrada junto com a venda como **parcela 0** do mesmo `installment_group_id` (valor, data, forma e situação próprios). Também dá para ligar uma entrada avulsa ao cliente pelo campo "Cliente" do lançamento.
 - **Vencimentos de parcelas:** gerados a partir da data da primeira parcela e do intervalo (mensal, a cada 15 dias ou a cada N dias). Depois de criadas, a data e o valor de **cada parcela** podem ser editados individualmente.
 - **Arquivar** categoria, forma de pagamento ou cliente: some dos seletores, mas continua no histórico. Excluir de vez só é permitido quando não há lançamentos ligados.
 
@@ -208,8 +208,8 @@ Em `profiles`:
 
 ## Dados padrão (criados para cada novo usuário)
 
-**Categorias de saída:** Moradia, Mercado, Restaurantes, Transporte, Saúde, Educação, Lazer, Compras, Assinaturas, Outros.
+**Categorias de saída:** Moradia, Mercado, Restaurantes, Transporte, Saúde, Educação, Lazer, Compras, Assinaturas, Empréstimo, Outros.
 
-**Categorias de entrada:** Salário, Vendas, Freela, Reembolso, Rendimentos, Outros.
+**Categorias de entrada:** Salário, Vendas, Freela, Reembolso, Rendimentos, Empréstimo, Outros.
 
 **Formas de pagamento:** Cartão de crédito (`credit_card`), Cartão de débito (`debit_card`), Pix (`pix`), Dinheiro (`cash`), Boleto (`boleto`).

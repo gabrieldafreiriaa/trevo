@@ -31,8 +31,10 @@ export default async function EditarLancamentoPage({
   ]);
   if (!transaction) notFound();
 
-  const installment =
-    transaction.installment_total && transaction.installment_total > 1
+  const isDownPayment = transaction.installment_number === 0;
+  const installment = isDownPayment
+    ? " · entrada da venda"
+    : transaction.installment_total && transaction.installment_total > 1
       ? ` · parcela ${transaction.installment_number} de ${transaction.installment_total}`
       : "";
 
@@ -59,6 +61,7 @@ export default async function EditarLancamentoPage({
             description: transaction.description,
             category_id: transaction.category_id,
             payment_method_id: transaction.payment_method_id ?? "",
+            client_id: transaction.client_id ?? "",
             due_date: transaction.due_date,
             status: transaction.status,
             notes: transaction.notes ?? "",
@@ -80,10 +83,17 @@ export default async function EditarLancamentoPage({
 
       <div className="flex flex-col gap-2">
         <DeleteButton
-          label={installment ? "Excluir só esta parcela" : "Excluir lançamento"}
+          label={
+            isDownPayment
+              ? "Excluir a entrada"
+              : installment
+                ? "Excluir só esta parcela"
+                : "Excluir lançamento"
+          }
           onDelete={deleteTransaction.bind(null, transaction.id)}
         />
         {installment &&
+        !isDownPayment &&
         transaction.installment_number !== transaction.installment_total ? (
           <DeleteButton
             label="Excluir esta e as próximas parcelas"

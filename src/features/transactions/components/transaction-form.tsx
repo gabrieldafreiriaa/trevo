@@ -27,6 +27,7 @@ export type TransactionFormValues = {
   description: string;
   category_id: string;
   payment_method_id: string;
+  client_id: string;
   due_date: string;
   status: StoredStatus;
   notes: string;
@@ -174,6 +175,33 @@ export function TransactionForm({
           })),
         ]}
       />
+
+      {isIncome && options.clients.length ? (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="client_id">Cliente (opcional)</Label>
+          <select
+            id="client_id"
+            name="client_id"
+            defaultValue={initial.client_id}
+            className="h-12 w-full cursor-pointer rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
+          >
+            <option value="">Nenhum</option>
+            {options.clients
+              .filter((c) => !c.archived_at || c.id === initial.client_id)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+          </select>
+          <p className="text-[13px] text-muted-foreground">
+            Use para a entrada (sinal) de uma venda: ela soma no histórico do
+            cliente.
+          </p>
+        </div>
+      ) : (
+        <input type="hidden" name="client_id" value="" />
+      )}
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="due_date">

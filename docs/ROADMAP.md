@@ -86,13 +86,16 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 
 ### S5 — Clientes e vendas
 
-- [ ] Migration de `clients` (+ RLS) e de `transactions.client_id` e `interest_cents`, com os checks
-- [ ] Tela "Clientes": lista com total vendido, recebido, a receber e em atraso
-- [ ] Cadastro de venda: cliente, descrição (ex.: "Moto CG 160"), valor da parcela **ou** total, nº de parcelas (1 a 48), primeira data e intervalo
-- [ ] Carnê do cliente: todas as parcelas com situação, ações de receber (total ou parcial) e editar
-- [ ] Juros por parcela: campo de valor livre ao editar uma parcela; o valor devido passa a ser parcela + juros
-- [ ] Vincular uma entrada comum (sinal) a um cliente
-- [ ] Função `client_balances` e testes (valor devido com juros, parcial, atraso)
+- [x] Migration de `clients` (+ RLS) e de `transactions.client_id` (FK composta, só em entradas); `interest_cents` já veio no S3
+- [x] Tela "Clientes": lista com a receber, em atraso e próxima parcela; totais no topo
+- [x] Cadastro de venda: descrição, valor da parcela **ou** total, nº de parcelas (1 a 48), primeira data e intervalo, com prévia
+- [x] Carnê do cliente: parcelas agrupadas por venda, situação, "Receber" num toque; parcial e juros pela tela da parcela
+- [x] Juros por parcela: campo de valor livre ao editar uma parcela; o valor devido passa a ser parcela + juros
+- [x] Entrada (sinal) no cadastro da venda: "Teve entrada?" com valor, data, forma e situação (parcela 0 do mesmo grupo)
+- [x] Vincular uma entrada avulsa a um cliente (campo "Cliente" nas entradas + botão "Entrada / sinal" no carnê)
+- [x] Função `client_balances` e testes (valor devido com juros, parcial, atraso)
+- [x] Botão de WhatsApp no carnê quando o cliente tem telefone (atalho para cobrar)
+- [x] Cliente de exemplo (Pedro, moto em 5x) no seed
 
 **Pronto quando:** dá pra cadastrar "Pedro · 5x de R$ 1.300", ver as parcelas nos próximos meses, cobrar juros numa parcela atrasada e acompanhar o saldo dele.
 

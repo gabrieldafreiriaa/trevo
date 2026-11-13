@@ -113,7 +113,8 @@ Next.js na Vercel (Node)
 ### Vendas a clientes e juros
 
 - Uma venda parcelada é um parcelamento de **entrada** com `client_id`. As parcelas entram no **previsto** de cada mês, como faturamento.
-- O sinal (entrada) é um lançamento de entrada comum, já recebido, opcionalmente ligado ao mesmo cliente.
+- O sinal (entrada), se houver, é cadastrado no formulário da venda ("Teve entrada?"): vira a **parcela 0** do mesmo grupo, com valor, data, forma de pagamento e situação próprios. O carnê mostra "Entrada + Nx" juntos.
+- Quando o valor informado é o **total**, ele já inclui a entrada: as parcelas dividem `total − entrada` (`features/clients/sale.ts → buildSalePlan`, a mesma função na prévia e na gravação). Quando é o **valor de cada parcela**, a entrada soma por fora.
 - **Juros** ficam em `interest_cents`, separados do valor original. O valor devido é `amount_cents + interest_cents`. O usuário digita o valor combinado; o app nunca calcula juros sozinho.
 - O carnê do cliente e os totais (vendido, recebido, a receber, em atraso, juros recebidos) vêm da função `client_balances`.
 

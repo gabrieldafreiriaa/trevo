@@ -36,6 +36,7 @@ export const transactionSchema = z
       .max(80, "Use no máximo 80 caracteres."),
     category_id: z.uuid("Escolha uma categoria."),
     payment_method_id: z.preprocess(emptyToNull, z.uuid().nullable()),
+    client_id: z.preprocess(emptyToNull, z.uuid().nullable().default(null)),
     due_date: z.string().refine(isValidISODate, "Escolha uma data válida."),
     status: z.enum(["paid", "pending", "partial"], "Escolha a situação."),
     paid_cents: optionalCentsField,
@@ -71,6 +72,8 @@ export const transactionSchema = z
     ...v,
     // O banco normaliza também (trigger sync_paid_status); aqui só evitamos lixo.
     paid_cents: v.status === "partial" ? v.paid_cents : 0,
+    // Cliente só existe em entradas.
+    client_id: v.type === "income" ? v.client_id : null,
   }));
 
 export type TransactionInput = z.infer<typeof transactionSchema>;

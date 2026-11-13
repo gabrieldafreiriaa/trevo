@@ -125,3 +125,22 @@ describe("repeatSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("cliente no lançamento", () => {
+  const cliente = "9c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f";
+  it("fica na entrada e some na saída", () => {
+    const entrada = transactionSchema.parse({
+      ...base,
+      type: "income",
+      client_id: cliente,
+    });
+    expect(entrada.client_id).toBe(cliente);
+    const saida = transactionSchema.parse({ ...base, client_id: cliente });
+    expect(saida.client_id).toBeNull();
+  });
+  it("é opcional", () => {
+    expect(
+      transactionSchema.parse({ ...base, type: "income" }).client_id,
+    ).toBeNull();
+  });
+});

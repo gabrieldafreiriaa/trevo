@@ -89,6 +89,7 @@ export type FormOptions = {
     Tables<"payment_methods">,
     "id" | "name" | "kind" | "archived_at"
   >[];
+  clients: Pick<Tables<"clients">, "id" | "name" | "archived_at">[];
 };
 
 /**
@@ -98,7 +99,7 @@ export type FormOptions = {
  */
 export async function getOptions(userId: string): Promise<FormOptions> {
   const supabase = await createClient();
-  const [categories, paymentMethods] = await Promise.all([
+  const [categories, paymentMethods, clients] = await Promise.all([
     supabase
       .from("categories")
       .select("id, name, type, icon, color, archived_at")
@@ -109,10 +110,20 @@ export async function getOptions(userId: string): Promise<FormOptions> {
       .select("id, name, kind, archived_at")
       .eq("user_id", userId)
       .order("name"),
+    supabase
+      .from("clients")
+      .select("id, name, archived_at")
+      .eq("user_id", userId)
+      .order("name"),
   ]);
   if (categories.error) throw categories.error;
   if (paymentMethods.error) throw paymentMethods.error;
-  return { categories: categories.data, paymentMethods: paymentMethods.data };
+  if (clients.error) throw clients.error;
+  return {
+    categories: categories.data,
+    paymentMethods: paymentMethods.data,
+    clients: clients.data,
+  };
 }
 
 /** Totais do mês a partir das linhas (S6 troca por função SQL no dashboard). */

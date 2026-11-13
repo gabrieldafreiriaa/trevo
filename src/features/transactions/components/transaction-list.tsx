@@ -24,6 +24,7 @@ function groupByDay(rows: TransactionRow[]) {
 export function TransactionList({ rows, options }: Props) {
   const categories = new Map(options.categories.map((c) => [c.id, c]));
   const methods = new Map(options.paymentMethods.map((p) => [p.id, p]));
+  const clients = new Map(options.clients.map((c) => [c.id, c.name]));
 
   return (
     <div className="flex flex-col gap-5">
@@ -41,10 +42,13 @@ export function TransactionList({ rows, options }: Props) {
               const income = t.type === "income";
               const open = t.status !== "paid";
               const installment =
-                t.installment_total && t.installment_total > 1
-                  ? `${t.installment_number}/${t.installment_total}`
-                  : null;
-              const meta = [category?.name, method?.name, installment]
+                t.installment_number === 0
+                  ? "entrada"
+                  : t.installment_total && t.installment_total > 1
+                    ? `${t.installment_number}/${t.installment_total}`
+                    : null;
+              const client = t.client_id ? clients.get(t.client_id) : undefined;
+              const meta = [client ?? category?.name, method?.name, installment]
                 .filter(Boolean)
                 .join(" · ");
 
