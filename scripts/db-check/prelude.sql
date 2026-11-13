@@ -36,6 +36,8 @@ language plpgsql security definer as $$
 begin insert into public._tap(ok, descr, detail) values (ok, d, det); return case when ok then 'ok' else 'not ok' end; end $$;
 create function public.is(anyelement, anyelement, text) returns text language sql as $$
   select public._rec($1 is not distinct from $2, $3, format('got %s expected %s', $1, $2)) $$;
+create function public.isnt(anyelement, anyelement, text) returns text language sql as $$
+  select public._rec($1 is distinct from $2, $3, format('got %s, should differ', $1)) $$;
 create function public.lives_ok(text, text) returns text language plpgsql as $$
 begin execute $1; return public._rec(true, $2);
 exception when others then return public._rec(false, $2, sqlstate||' '||sqlerrm); end $$;

@@ -89,6 +89,84 @@ export type Database = {
           },
         ];
       };
+      transactions: {
+        Row: {
+          amount_cents: number;
+          category_id: string;
+          created_at: string;
+          description: string;
+          due_date: string;
+          id: string;
+          installment_group_id: string | null;
+          installment_number: number | null;
+          installment_total: number | null;
+          interest_cents: number;
+          notes: string | null;
+          paid_at: string | null;
+          paid_cents: number;
+          payment_method_id: string | null;
+          status: Database["public"]["Enums"]["transaction_status"];
+          type: Database["public"]["Enums"]["transaction_type"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount_cents: number;
+          category_id: string;
+          created_at?: string;
+          description: string;
+          due_date: string;
+          id?: string;
+          installment_group_id?: string | null;
+          installment_number?: number | null;
+          installment_total?: number | null;
+          interest_cents?: number;
+          notes?: string | null;
+          paid_at?: string | null;
+          paid_cents?: number;
+          payment_method_id?: string | null;
+          status?: Database["public"]["Enums"]["transaction_status"];
+          type: Database["public"]["Enums"]["transaction_type"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount_cents?: number;
+          category_id?: string;
+          created_at?: string;
+          description?: string;
+          due_date?: string;
+          id?: string;
+          installment_group_id?: string | null;
+          installment_number?: number | null;
+          installment_total?: number | null;
+          interest_cents?: number;
+          notes?: string | null;
+          paid_at?: string | null;
+          paid_cents?: number;
+          payment_method_id?: string | null;
+          status?: Database["public"]["Enums"]["transaction_status"];
+          type?: Database["public"]["Enums"]["transaction_type"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_fkey";
+            columns: ["category_id", "user_id", "type"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id", "user_id", "type"];
+          },
+          {
+            foreignKeyName: "transactions_payment_method_fkey";
+            columns: ["payment_method_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "payment_methods";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -112,11 +190,37 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      transactions_with_status: {
+        Row: {
+          amount_cents: number | null;
+          category_id: string | null;
+          created_at: string | null;
+          description: string | null;
+          due_date: string | null;
+          id: string | null;
+          installment_group_id: string | null;
+          installment_number: number | null;
+          installment_total: number | null;
+          interest_cents: number | null;
+          notes: string | null;
+          paid_at: string | null;
+          paid_cents: number | null;
+          payment_method_id: string | null;
+          status: Database["public"]["Enums"]["transaction_status"] | null;
+          type: Database["public"]["Enums"]["transaction_type"] | null;
+          updated_at: string | null;
+          user_id: string | null;
+          due_cents: number | null;
+          remaining_cents: number | null;
+          effective_status: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       is_admin: { Args: never; Returns: boolean };
       seed_user_defaults: { Args: { p_user: string }; Returns: undefined };
+      today_sp: { Args: never; Returns: string };
     };
     Enums: {
       installment_interval: "monthly" | "biweekly" | "days";
@@ -147,3 +251,6 @@ export type TablesUpdate<T extends keyof PublicSchema["Tables"]> =
   PublicSchema["Tables"][T]["Update"];
 export type Enums<T extends keyof PublicSchema["Enums"]> =
   PublicSchema["Enums"][T];
+
+export type Views<T extends keyof PublicSchema["Views"]> =
+  PublicSchema["Views"][T]["Row"];

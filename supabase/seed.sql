@@ -49,3 +49,29 @@ $$;
 update public.profiles
 set role = 'admin'
 where id = '00000000-0000-4000-8000-000000000001';
+
+-- Lançamentos de exemplo do Gabriel, no mês atual (datas relativas a hoje).
+do $$
+declare
+  g constant uuid := '00000000-0000-4000-8000-000000000001';
+  m date := date_trunc('month', public.today_sp())::date;
+  pix uuid := (select id from public.payment_methods where user_id = g and kind = 'pix');
+  credito uuid := (select id from public.payment_methods where user_id = g and kind = 'credit_card');
+  debito uuid := (select id from public.payment_methods where user_id = g and kind = 'debit_card');
+
+begin
+  insert into public.transactions (user_id, type, description, amount_cents, status, due_date, category_id, payment_method_id)
+  values
+    (g, 'income',  'Salário',             620000, 'paid',    m + 4,  (select id from public.categories where user_id = g and name = 'Salário'), pix),
+    (g, 'expense', 'Aluguel',             140000, 'paid',    m + 5,  (select id from public.categories where user_id = g and name = 'Moradia'), pix),
+    (g, 'expense', 'Mercado do bairro',    31240, 'paid',    m + 10, (select id from public.categories where user_id = g and name = 'Mercado'), debito),
+    (g, 'expense', 'Uber',                  3890, 'paid',    m + 9,  (select id from public.categories where user_id = g and name = 'Transporte'), credito),
+    (g, 'expense', 'Conta de luz',          18600, 'pending', m + 9,  (select id from public.categories where user_id = g and name = 'Moradia'), pix),
+    (g, 'expense', 'Internet',              12000, 'pending', m + 17, (select id from public.categories where user_id = g and name = 'Moradia'), pix),
+    (g, 'income',  'Freela site',          65000, 'pending', m + 24, (select id from public.categories where user_id = g and name = 'Freela'), null);
+
+  insert into public.transactions (user_id, type, description, amount_cents, paid_cents, status, due_date, category_id, payment_method_id)
+  values (g, 'expense', 'Academia', 9900, 5000, 'partial', m + 11,
+          (select id from public.categories where user_id = g and name = 'Saúde'), pix);
+end;
+$$;

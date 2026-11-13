@@ -6,6 +6,8 @@ import {
   currentMonth,
   dateInMonth,
   formatDateBR,
+  formatDayHeader,
+  formatDayMonth,
   formatMonthBR,
   installmentDueDates,
   isValidISODate,
@@ -175,5 +177,12 @@ describe("currentHour", () => {
   it("usa a hora de São Paulo", () => {
     expect(currentHour(new Date("2026-11-13T01:30:00Z"))).toBe(22);
     expect(currentHour(new Date("2026-11-12T03:00:00Z"))).toBe(0);
+  });
+});
+
+describe("formatDayHeader / formatDayMonth", () => {
+  it("formata o cabeçalho do dia em pt-BR", () => {
+    expect(formatDayHeader("2026-11-12")).toBe("quinta-feira, 12 de novembro");
+    expect(formatDayMonth("2026-11-05")).toBe("05/11");
   });
 });

@@ -1,0 +1,85 @@
+import { describe, expect, it } from "vitest";
+
+import { transactionSchema } from "./schemas";
+
+const base = {
+  type: "expense",
+  amount_cents: "15000",
+  description: " Feira ",
+  category_id: "4b0b6a4e-7c1e-4d5b-9b1f-0d6b2a3f9c11",
+  payment_method_id: "7a1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d",
+  due_date: "2026-11-10",
+  status: "paid",
+  paid_cents: "",
+  interest_cents: "",
+  notes: "",
+};
+
+describe("transactionSchema", () => {
+  it("aceita uma saída paga e converte os campos", () => {
+    const r = transactionSchema.safeParse(base);
+    expect(r.success).toBe(true);
+    expect(r.data).toMatchObject({
+      amount_cents: 15000,
+      description: "Feira",
+      interest_cents: 0,
+      paid_cents: 0,
+      notes: null,
+    });
+  });
+
+  it("aceita valor digitado com máscara", () => {
+    const r = transactionSchema.safeParse({
+      ...base,
+      amount_cents: "R$ 1.300,00",
+    });
+    expect(r.data?.amount_cents).toBe(130000);
+  });
+
+  it("exige valor positivo", () => {
+    expect(
+      transactionSchema.safeParse({ ...base, amount_cents: "0" }).success,
+    ).toBe(false);
+    expect(
+      transactionSchema.safeParse({ ...base, amount_cents: "" }).success,
+    ).toBe(false);
+  });
+
+  it("saída precisa de forma de pagamento; entrada não", () => {
+    const semForma = { ...base, payment_method_id: "" };
+    const r = transactionSchema.safeParse(semForma);
+    expect(r.success).toBe(false);
+    expect(r.error?.issues[0]?.path).toEqual(["payment_method_id"]);
+    expect(
+      transactionSchema.safeParse({ ...semForma, type: "income" }).success,
+    ).toBe(true);
+  });
+
+  it("parcial precisa de um valor pago entre zero e o devido (com juros)", () => {
+    const parcial = { ...base, status: "partial", interest_cents: "1000" };
+    expect(
+      transactionSchema.safeParse({ ...parcial, paid_cents: "0" }).success,
+    ).toBe(false);
+    expect(
+      transactionSchema.safeParse({ ...parcial, paid_cents: "16000" }).success,
+    ).toBe(false);
+    const ok = transactionSchema.safeParse({ ...parcial, paid_cents: "15500" });
+    expect(ok.success).toBe(true);
+    expect(ok.data?.paid_cents).toBe(15500);
+  });
+
+  it("ignora valor pago quando não é parcial", () => {
+    const r = transactionSchema.safeParse({
+      ...base,
+      status: "pending",
+      paid_cents: "500",
+    });
+    expect(r.data?.paid_cents).toBe(0);
+  });
+
+  it("recusa data inválida", () => {
+    expect(
+      transactionSchema.safeParse({ ...base, due_date: "2026-02-30" }).success,
+    ).toBe(false);
+  });
+});

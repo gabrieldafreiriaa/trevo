@@ -100,6 +100,8 @@ Criada pelo trigger `on_auth_user_created`, que também semeia as categorias e f
 
 ### `transactions` (lançamento)
 
+> Criada no S3. `recurrence_id` é adicionada no S4 e `client_id` no S5, junto com as tabelas a que apontam.
+
 | Coluna                     | Tipo                 | Regras                                                                                                          |
 | -------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `id`                       | `uuid` PK            |                                                                                                                 |
@@ -168,6 +170,8 @@ Todas as colunas de `transactions` e mais:
 
 | Função                                                            | Tipo                                             | O que faz                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `today_sp()`                                                      | `stable`                                         | "Hoje" em America/Sao_Paulo. Fonte única de data atual no banco                                                                                |
+| `set_updated_at()`                                                | trigger                                          | Atualiza `updated_at`                                                                                                                          |
 | `is_admin()`                                                      | `stable`, `security definer`                     | `true` se `auth.uid()` tem `role = 'admin'`. Usada nas políticas                                                                               |
 | `handle_new_user()`                                               | trigger em `auth.users`                          | Cria o `profile` e chama `seed_user_defaults`                                                                                                  |
 | `seed_user_defaults(p_user uuid)`                                 | `security definer`, só uso interno               | Cria as categorias (com ícone e cor) e as formas de pagamento padrão. Idempotente                                                              |

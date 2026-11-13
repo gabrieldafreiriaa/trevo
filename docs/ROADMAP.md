@@ -64,11 +64,12 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 
 ### S3 — Lançamentos
 
-- [ ] Migration de `transactions`, os checks, a view `transactions_with_status` e o trigger `sync_paid_status`
-- [ ] Formulário de lançamento (tipo, valor, descrição, categoria, forma, vencimento, situação, valor pago se parcial, observação), em tela cheia no celular e modal no computador
-- [ ] Lista do mês com filtros e totais, agrupada por dia
-- [ ] Ações rápidas: marcar como pago, registrar pagamento parcial, editar e excluir
-- [ ] Testes da situação efetiva e da normalização de status
+- [x] Migration de `transactions`, os checks, a view `transactions_with_status` e o trigger `sync_paid_status` (com juros por lançamento)
+- [x] Formulário de lançamento (tipo, valor com máscara, descrição, categoria, forma, data/vencimento, situação, valor pago se parcial, juros, observação), em página própria no celular e no computador
+- [x] Lista do mês com filtros (tipo, situação, categoria, forma) e totais (realizado e previsto), agrupada por dia
+- [x] Ações rápidas: "Pagar"/"Receber" na lista; pagamento parcial, edição e exclusão pela tela do lançamento
+- [x] Testes da situação efetiva e da normalização de status (Vitest + 14 testes pgTAP)
+- [x] Lançamentos de exemplo do Gabriel no seed
 
 **Pronto quando:** dá pra usar o Trevo no dia a dia para registrar os gastos do mês.
 

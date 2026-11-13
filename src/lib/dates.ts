@@ -208,3 +208,21 @@ export function currentHour(now: Date = new Date()): number {
     }).format(now),
   );
 }
+
+const dayHeaderFormatter = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "UTC",
+});
+
+/** "2026-11-12" → "quinta-feira, 12 de novembro" */
+export function formatDayHeader(date: ISODate): string {
+  const { year, month, day } = parseISODate(date);
+  return dayHeaderFormatter.format(new Date(Date.UTC(year, month - 1, day)));
+}
+
+/** "2026-11-05" → "05/11" */
+export function formatDayMonth(date: ISODate): string {
+  return formatDateBR(date).slice(0, 5);
+}

@@ -2,7 +2,7 @@
 
 Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio login e a própria tela. Os lançamentos são feitos à mão, e o dashboard mostra para onde o dinheiro foi e quanto ainda vai sobrar no mês.
 
-> **Status:** S0, S1 e S2 concluídos · S3 (lançamentos) a seguir.
+> **Status:** S0 a S3 concluídos · S4 (parcelamento e recorrência) a seguir.
 
 ## O que o Trevo faz (v1)
 
@@ -50,7 +50,7 @@ pnpm db:reset                   # aplica as migrations e cria os usuários de te
 pnpm dev                        # http://localhost:3000
 ```
 
-**Usuários de teste** (senha `trevo123`): `gabriel@trevo.local` (admin), `pai@trevo.local` e `namorada@trevo.local`.
+**Usuários de teste** (senha `trevo123`): `gabriel@trevo.local` (admin), `pai@trevo.local` e `namorada@trevo.local`. O Gabriel já vem com alguns lançamentos de exemplo no mês atual.
 
 **E-mails locais** (convite e "esqueci minha senha") não saem de verdade: abra o Mailpit em http://127.0.0.1:54324.
 
