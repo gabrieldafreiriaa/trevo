@@ -112,11 +112,6 @@ export default async function ClientePage({
               <Pencil aria-hidden />
             </Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link href={`/lancamentos/novo?tipo=entradas&cliente=${client.id}`}>
-              Entrada / sinal
-            </Link>
-          </Button>
           <Button asChild>
             <Link href={`/clientes/${client.id}/venda`}>
               <Plus strokeWidth={2.5} aria-hidden />

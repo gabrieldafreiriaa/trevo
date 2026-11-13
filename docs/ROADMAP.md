@@ -92,7 +92,7 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 - [x] Carnê do cliente: parcelas agrupadas por venda, situação, "Receber" num toque; parcial e juros pela tela da parcela
 - [x] Juros por parcela: campo de valor livre ao editar uma parcela; o valor devido passa a ser parcela + juros
 - [x] Entrada (sinal) no cadastro da venda: "Teve entrada?" com valor, data, forma e situação (parcela 0 do mesmo grupo)
-- [x] Vincular uma entrada avulsa a um cliente (campo "Cliente" nas entradas + botão "Entrada / sinal" no carnê)
+- [x] Vincular uma entrada avulsa a um cliente (campo "Cliente" no formulário de entrada)
 - [x] Função `client_balances` e testes (valor devido com juros, parcial, atraso)
 - [x] Botão de WhatsApp no carnê quando o cliente tem telefone (atalho para cobrar)
 - [x] Cliente de exemplo (Pedro, moto em 5x) no seed
