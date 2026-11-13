@@ -1,0 +1,2 @@
+-- Dados de desenvolvimento (rodam no `pnpm db:reset`).
+-- Ficam vazios até o S1, quando entram os usuários de teste.

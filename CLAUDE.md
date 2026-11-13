@@ -6,7 +6,10 @@ Este arquivo dá contexto a assistentes de IA (e a pessoas) que vão programar n
 
 O Trevo é um controle financeiro pessoal para 3 usuários de uma família: Gabriel (admin), o pai e a namorada. Cada um tem login e dados próprios, e o admin pode **visualizar** os dados dos outros, sem editar. Os lançamentos são feitos à mão, com categoria e forma de pagamento.
 
+Leia também o `AGENTS.md`, gerado pelo Next.js: esta versão (16) tem mudanças em relação ao que modelos de IA costumam conhecer. A documentação oficial da versão instalada fica em `node_modules/next/dist/docs/`. Exemplo: o `middleware.ts` agora se chama `proxy.ts`.
+
 Documentação completa:
+
 - `docs/ARCHITECTURE.md`: decisões técnicas, estrutura de pastas e convenções
 - `docs/DATA_MODEL.md`: tabelas, regras de negócio e RLS
 - `docs/ROADMAP.md`: escopo e sprints (veja qual é a sprint atual antes de começar)
