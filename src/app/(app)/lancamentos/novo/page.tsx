@@ -32,6 +32,7 @@ export default async function NovoLancamentoPage({
           action={createTransaction}
           options={options}
           submitLabel="Salvar lançamento"
+          allowRepeat
           initial={{
             type,
             amount_cents: 0,

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DeleteButton } from "@/components/form/delete-button";
 import { BackLink } from "@/components/layout/back-link";
 import { PageHeader } from "@/components/layout/page-header";
 import {
+  deleteInstallmentsFrom,
   deleteTransaction,
   updateTransaction,
 } from "@/features/transactions/actions";
@@ -63,10 +65,32 @@ export default async function EditarLancamentoPage({
           }}
         />
       </div>
-      <DeleteButton
-        label="Excluir lançamento"
-        onDelete={deleteTransaction.bind(null, transaction.id)}
-      />
+      {transaction.recurrence_id ? (
+        <p className="rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
+          Este lançamento vem de uma conta fixa. Mudanças aqui valem só para
+          este mês.{" "}
+          <Link
+            href={`/recorrentes/${transaction.recurrence_id}`}
+            className="font-medium underline"
+          >
+            Editar a conta fixa
+          </Link>
+        </p>
+      ) : null}
+
+      <div className="flex flex-col gap-2">
+        <DeleteButton
+          label={installment ? "Excluir só esta parcela" : "Excluir lançamento"}
+          onDelete={deleteTransaction.bind(null, transaction.id)}
+        />
+        {installment &&
+        transaction.installment_number !== transaction.installment_total ? (
+          <DeleteButton
+            label="Excluir esta e as próximas parcelas"
+            onDelete={deleteInstallmentsFrom.bind(null, transaction.id)}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

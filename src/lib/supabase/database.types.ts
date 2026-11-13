@@ -89,6 +89,54 @@ export type Database = {
           },
         ];
       };
+      recurrences: {
+        Row: {
+          active: boolean;
+          amount_cents: number;
+          category_id: string;
+          created_at: string;
+          day_of_month: number;
+          description: string;
+          ends_on: string | null;
+          id: string;
+          payment_method_id: string | null;
+          starts_on: string;
+          type: Database["public"]["Enums"]["transaction_type"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          active?: boolean;
+          amount_cents: number;
+          category_id: string;
+          created_at?: string;
+          day_of_month: number;
+          description: string;
+          ends_on?: string | null;
+          id?: string;
+          payment_method_id?: string | null;
+          starts_on: string;
+          type: Database["public"]["Enums"]["transaction_type"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          active?: boolean;
+          amount_cents?: number;
+          category_id?: string;
+          created_at?: string;
+          day_of_month?: number;
+          description?: string;
+          ends_on?: string | null;
+          id?: string;
+          payment_method_id?: string | null;
+          starts_on?: string;
+          type?: Database["public"]["Enums"]["transaction_type"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       transactions: {
         Row: {
           amount_cents: number;
@@ -105,6 +153,7 @@ export type Database = {
           paid_at: string | null;
           paid_cents: number;
           payment_method_id: string | null;
+          recurrence_id: string | null;
           status: Database["public"]["Enums"]["transaction_status"];
           type: Database["public"]["Enums"]["transaction_type"];
           updated_at: string;
@@ -125,6 +174,7 @@ export type Database = {
           paid_at?: string | null;
           paid_cents?: number;
           payment_method_id?: string | null;
+          recurrence_id?: string | null;
           status?: Database["public"]["Enums"]["transaction_status"];
           type: Database["public"]["Enums"]["transaction_type"];
           updated_at?: string;
@@ -145,6 +195,7 @@ export type Database = {
           paid_at?: string | null;
           paid_cents?: number;
           payment_method_id?: string | null;
+          recurrence_id?: string | null;
           status?: Database["public"]["Enums"]["transaction_status"];
           type?: Database["public"]["Enums"]["transaction_type"];
           updated_at?: string;
@@ -213,6 +264,7 @@ export type Database = {
           due_cents: number | null;
           remaining_cents: number | null;
           effective_status: string | null;
+          recurrence_id: string | null;
         };
         Relationships: [];
       };
@@ -221,6 +273,10 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean };
       seed_user_defaults: { Args: { p_user: string }; Returns: undefined };
       today_sp: { Args: never; Returns: string };
+      generate_recurring_transactions: {
+        Args: { p_recurrence?: string };
+        Returns: number;
+      };
     };
     Enums: {
       installment_interval: "monthly" | "biweekly" | "days";

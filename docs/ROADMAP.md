@@ -75,12 +75,12 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 
 ### S4 — Previstos
 
-- [ ] `create_installments` com intervalo (mensal, a cada 15 dias ou a cada N dias) e a opção "Parcelado" no formulário, com a prévia "10x de R$ X"
-- [ ] Editar a data e o valor de uma parcela específica
-- [ ] Editar ou excluir parcelas: "só esta" ou "esta e as próximas"
-- [ ] Migration de `recurrences`, a tela "Recorrentes" e o CRUD de regras
-- [ ] `generate_recurring_transactions` + pg_cron + geração imediata ao salvar uma regra
-- [ ] Testes de divisão de centavos, de fim de mês (dia 31) e de idempotência
+- [x] Parcelado no formulário: total ou valor da parcela, intervalo (mensal, 15 dias ou a cada N dias) e prévia das parcelas; tudo num único INSERT
+- [x] Editar a data e o valor de uma parcela específica (cada parcela é um lançamento)
+- [x] Excluir parcelas: "só esta" ou "esta e as próximas" (o total das restantes é ajustado)
+- [x] Migration de `recurrences`, a tela "Recorrentes" e o CRUD de regras (pausar/retomar, excluir mantendo histórico) + "Todo mês" no formulário de lançamento
+- [x] `generate_recurring_transactions` + pg_cron + geração imediata ao salvar uma regra
+- [x] Testes de divisão de centavos, de fim de mês (dia 31) e de idempotência (Vitest + 9 testes pgTAP)
 
 **Pronto quando:** aluguel, salário e uma compra em 10x aparecem sozinhos nos meses seguintes.
 

@@ -83,6 +83,8 @@ Criada pelo trigger `on_auth_user_created`, que também semeia as categorias e f
 
 ### `recurrences` (regra de conta fixa)
 
+> Criada no S4. Tem `unique (id, user_id)`: `transactions.recurrence_id` é uma FK composta `(recurrence_id, user_id)`, então ninguém liga um lançamento à regra de outra pessoa. Excluir a regra solta o vínculo (`on delete set null (recurrence_id)`) e mantém o histórico.
+
 | Coluna                     | Tipo               | Regras                                                                         |
 | -------------------------- | ------------------ | ------------------------------------------------------------------------------ |
 | `id`                       | `uuid` PK          |                                                                                |
@@ -168,21 +170,20 @@ Todas as colunas de `transactions` e mais:
 
 ## Funções
 
-| Função                                                            | Tipo                                             | O que faz                                                                                                                                      |
-| ----------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `today_sp()`                                                      | `stable`                                         | "Hoje" em America/Sao_Paulo. Fonte única de data atual no banco                                                                                |
-| `set_updated_at()`                                                | trigger                                          | Atualiza `updated_at`                                                                                                                          |
-| `is_admin()`                                                      | `stable`, `security definer`                     | `true` se `auth.uid()` tem `role = 'admin'`. Usada nas políticas                                                                               |
-| `handle_new_user()`                                               | trigger em `auth.users`                          | Cria o `profile` e chama `seed_user_defaults`                                                                                                  |
-| `seed_user_defaults(p_user uuid)`                                 | `security definer`, só uso interno               | Cria as categorias (com ícone e cor) e as formas de pagamento padrão. Idempotente                                                              |
-| `sync_paid_status()`                                              | trigger `before insert/update` em `transactions` | Normaliza `status` e `paid_cents` (ex.: parcial que chegou ao valor devido vira pago; marcado pago preenche `paid_cents` e `paid_at`)          |
-| `create_installments(...)`                                        | `security invoker`                               | Cria as N parcelas numa transação, com o resto dos centavos na primeira e vencimentos pelo intervalo escolhido. Aceita `client_id` para vendas |
-| `generate_recurring_transactions(p_recurrence uuid default null)` | `security definer`                               | Cria os lançamentos que faltam até hoje + 3 meses (de uma regra ou de todas). Idempotente                                                      |
-| `dashboard_summary(p_user uuid, p_month date)`                    | `security invoker`                               | Realizado, previsto, entradas, saídas, a pagar, a receber, a receber de clientes e variação contra o mês anterior                              |
-| `spending_by_category(p_user, p_month)`                           | `security invoker`                               | Saídas do mês por categoria                                                                                                                    |
-| `spending_by_payment_method(p_user, p_month)`                     | `security invoker`                               | Saídas do mês por forma de pagamento                                                                                                           |
-| `monthly_history(p_user, p_months int default 6)`                 | `security invoker`                               | Entradas e saídas por mês                                                                                                                      |
-| `client_balances(p_user)`                                         | `security invoker`                               | Por cliente: total vendido, recebido, a receber, em atraso e juros recebidos                                                                   |
+| Função                                                            | Tipo                                             | O que faz                                                                                                                             |
+| ----------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `today_sp()`                                                      | `stable`                                         | "Hoje" em America/Sao_Paulo. Fonte única de data atual no banco                                                                       |
+| `set_updated_at()`                                                | trigger                                          | Atualiza `updated_at`                                                                                                                 |
+| `is_admin()`                                                      | `stable`, `security definer`                     | `true` se `auth.uid()` tem `role = 'admin'`. Usada nas políticas                                                                      |
+| `handle_new_user()`                                               | trigger em `auth.users`                          | Cria o `profile` e chama `seed_user_defaults`                                                                                         |
+| `seed_user_defaults(p_user uuid)`                                 | `security definer`, só uso interno               | Cria as categorias (com ícone e cor) e as formas de pagamento padrão. Idempotente                                                     |
+| `sync_paid_status()`                                              | trigger `before insert/update` em `transactions` | Normaliza `status` e `paid_cents` (ex.: parcial que chegou ao valor devido vira pago; marcado pago preenche `paid_cents` e `paid_at`) |
+| `generate_recurring_transactions(p_recurrence uuid default null)` | `security definer`                               | Cria os lançamentos que faltam até hoje + 3 meses (de uma regra ou de todas). Idempotente                                             |
+| `dashboard_summary(p_user uuid, p_month date)`                    | `security invoker`                               | Realizado, previsto, entradas, saídas, a pagar, a receber, a receber de clientes e variação contra o mês anterior                     |
+| `spending_by_category(p_user, p_month)`                           | `security invoker`                               | Saídas do mês por categoria                                                                                                           |
+| `spending_by_payment_method(p_user, p_month)`                     | `security invoker`                               | Saídas do mês por forma de pagamento                                                                                                  |
+| `monthly_history(p_user, p_months int default 6)`                 | `security invoker`                               | Entradas e saídas por mês                                                                                                             |
+| `client_balances(p_user)`                                         | `security invoker`                               | Por cliente: total vendido, recebido, a receber, em atraso e juros recebidos                                                          |
 
 **Cron:** `select cron.schedule('trevo-recurrences', '0 6 * * *', 'select generate_recurring_transactions()');` roda às 06:00 UTC, que são 03:00 em Brasília.
 

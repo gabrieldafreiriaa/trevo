@@ -35,41 +35,29 @@ console.log("✓ seed.sql");
 const tests = readdirSync(join(root, "supabase/tests/database")).sort();
 let fail = 0;
 for (const t of tests) {
-  let sql = readFileSync(
-    join(root, "supabase/tests/database", t),
-    "utf8",
-  ).replace(/create extension if not exists pgtap[^;]*;/, "");
-  await db.exec("truncate public._tap restart identity;");
+  // Roda o teste dentro da própria transação (begin ... ) SEM o rollback final,
+  // lê os resultados e só então desfaz tudo: cada arquivo começa do zero.
+  const sql = readFileSync(join(root, "supabase/tests/database", t), "utf8")
+    .replace(/create extension if not exists pgtap[^;]*;/, "")
+    .replace(/\nrollback;\s*$/, "\n");
   try {
     await db.exec(sql);
+    await db.exec("reset role;");
+    const { rows } = await db.query(
+      "select ok, descr, detail from public._tap order by n",
+    );
+    for (const r of rows) {
+      console.log(
+        `${r.ok ? "  ✓" : "  ✗"} ${r.descr}${r.ok ? "" : "  → " + r.detail}`,
+      );
+      if (!r.ok) fail++;
+    }
+    console.log(`${t}: ${rows.length} asserções`);
   } catch (e) {
     console.log(`✗ ${t}: erro ao rodar: ${e.message}`);
     fail++;
+  } finally {
     await db.exec("rollback;").catch(() => {});
-    continue;
   }
-  // os testes fazem rollback; refaz sem rollback para ler resultados
-  await db.exec("reset role;");
-  const sql2 = sql.replace(/\nrollback;\s*$/, "\ncommit;");
-  await db.exec("truncate public._tap restart identity;");
-  try {
-    await db.exec(sql2);
-  } catch (e) {
-    console.log(`✗ ${t}: ${e.message}`);
-    fail++;
-    continue;
-  }
-  await db.exec("reset role;");
-  const { rows } = await db.query(
-    "select ok, descr, detail from public._tap order by n",
-  );
-  for (const r of rows) {
-    console.log(
-      `${r.ok ? "  ✓" : "  ✗"} ${r.descr}${r.ok ? "" : "  → " + r.detail}`,
-    );
-    if (!r.ok) fail++;
-  }
-  // restaura o estado (os testes alteram dados quando commitados)
-  console.log(`${t}: ${rows.length} asserções`);
 }
 process.exit(fail ? 1 : 0);

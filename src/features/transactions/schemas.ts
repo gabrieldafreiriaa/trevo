@@ -76,3 +76,38 @@ export const transactionSchema = z
 export type TransactionInput = z.infer<typeof transactionSchema>;
 
 export const idSchema = z.uuid("Lançamento inválido.");
+
+/** Opções de "Repetir" do formulário de NOVO lançamento. */
+export const repeatSchema = z.discriminatedUnion("repeat", [
+  z.object({ repeat: z.literal("none") }),
+  z.object({ repeat: z.literal("monthly") }),
+  z.object({
+    repeat: z.literal("installments"),
+    installment_count: z.coerce
+      .number("Quantas parcelas?")
+      .int("Use um número inteiro.")
+      .min(2, "Parcelado precisa de pelo menos 2 parcelas.")
+      .max(48, "No máximo 48 parcelas."),
+    amount_mode: z.enum(["total", "each"]),
+    interval_kind: z.enum(["monthly", "biweekly", "days"]),
+    interval_days: z.preprocess(
+      (v) => (v === "" || v === undefined ? undefined : v),
+      z.coerce
+        .number()
+        .int()
+        .min(1, "Mínimo de 1 dia.")
+        .max(365, "Máximo de 365 dias.")
+        .optional(),
+    ),
+  }),
+]);
+
+export type RepeatInput = z.infer<typeof repeatSchema>;
+
+export function toInterval(
+  r: Extract<RepeatInput, { repeat: "installments" }>,
+): import("@/lib/dates").InstallmentInterval | null {
+  if (r.interval_kind === "monthly") return { kind: "monthly" };
+  if (r.interval_kind === "biweekly") return { kind: "biweekly" };
+  return r.interval_days ? { kind: "days", every: r.interval_days } : null;
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { transactionSchema } from "./schemas";
+import { repeatSchema, toInterval, transactionSchema } from "./schemas";
 
 const base = {
   type: "expense",
@@ -80,6 +80,48 @@ describe("transactionSchema", () => {
   it("recusa data inválida", () => {
     expect(
       transactionSchema.safeParse({ ...base, due_date: "2026-02-30" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("repeatSchema", () => {
+  it("parcelado mensal", () => {
+    const r = repeatSchema.safeParse({
+      repeat: "installments",
+      installment_count: "10",
+      amount_mode: "total",
+      interval_kind: "monthly",
+      interval_days: "",
+    });
+    expect(r.success).toBe(true);
+    if (r.success && r.data.repeat === "installments") {
+      expect(r.data.installment_count).toBe(10);
+      expect(toInterval(r.data)).toEqual({ kind: "monthly" });
+    }
+  });
+
+  it("a cada N dias exige N", () => {
+    const r = repeatSchema.parse({
+      repeat: "installments",
+      installment_count: "3",
+      amount_mode: "each",
+      interval_kind: "days",
+      interval_days: "",
+    });
+    expect(r.repeat === "installments" && toInterval(r)).toBeNull();
+  });
+
+  it("recusa 1 ou mais de 48 parcelas", () => {
+    const base = {
+      repeat: "installments",
+      amount_mode: "total",
+      interval_kind: "monthly",
+    };
+    expect(
+      repeatSchema.safeParse({ ...base, installment_count: "1" }).success,
+    ).toBe(false);
+    expect(
+      repeatSchema.safeParse({ ...base, installment_count: "49" }).success,
     ).toBe(false);
   });
 });

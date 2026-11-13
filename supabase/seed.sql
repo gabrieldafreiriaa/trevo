@@ -62,16 +62,47 @@ declare
 begin
   insert into public.transactions (user_id, type, description, amount_cents, status, due_date, category_id, payment_method_id)
   values
-    (g, 'income',  'Salário',             620000, 'paid',    m + 4,  (select id from public.categories where user_id = g and name = 'Salário'), pix),
-    (g, 'expense', 'Aluguel',             140000, 'paid',    m + 5,  (select id from public.categories where user_id = g and name = 'Moradia'), pix),
     (g, 'expense', 'Mercado do bairro',    31240, 'paid',    m + 10, (select id from public.categories where user_id = g and name = 'Mercado'), debito),
     (g, 'expense', 'Uber',                  3890, 'paid',    m + 9,  (select id from public.categories where user_id = g and name = 'Transporte'), credito),
     (g, 'expense', 'Conta de luz',          18600, 'pending', m + 9,  (select id from public.categories where user_id = g and name = 'Moradia'), pix),
-    (g, 'expense', 'Internet',              12000, 'pending', m + 17, (select id from public.categories where user_id = g and name = 'Moradia'), pix),
     (g, 'income',  'Freela site',          65000, 'pending', m + 24, (select id from public.categories where user_id = g and name = 'Freela'), null);
 
   insert into public.transactions (user_id, type, description, amount_cents, paid_cents, status, due_date, category_id, payment_method_id)
   values (g, 'expense', 'Academia', 9900, 5000, 'partial', m + 11,
           (select id from public.categories where user_id = g and name = 'Saúde'), pix);
+end;
+$$;
+
+-- Contas fixas do Gabriel (geram os lançamentos do mês atual + 3 meses) e um parcelado.
+do $$
+declare
+  g constant uuid := '00000000-0000-4000-8000-000000000001';
+  m date := date_trunc('month', public.today_sp())::date;
+  pix uuid := (select id from public.payment_methods where user_id = g and kind = 'pix');
+  credito uuid := (select id from public.payment_methods where user_id = g and kind = 'credit_card');
+  grupo uuid := gen_random_uuid();
+begin
+  insert into public.recurrences (user_id, type, description, amount_cents, category_id, payment_method_id, day_of_month, starts_on)
+  values
+    (g, 'income',  'Salário',  620000, (select id from public.categories where user_id = g and name = 'Salário'), pix, 5,  m),
+    (g, 'expense', 'Aluguel',  140000, (select id from public.categories where user_id = g and name = 'Moradia'), pix, 6,  m),
+    (g, 'expense', 'Internet',  12000, (select id from public.categories where user_id = g and name = 'Moradia'), pix, 18, m);
+
+  perform public.generate_recurring_transactions();
+
+  -- Salário e aluguel deste mês já foram pagos.
+  update public.transactions set status = 'paid'
+  where user_id = g and due_date in (m + 4, m + 5) and recurrence_id is not null;
+
+  -- TV em 10x no cartão, começando neste mês.
+  insert into public.transactions (
+    user_id, type, description, amount_cents, status, due_date, category_id, payment_method_id,
+    installment_group_id, installment_number, installment_total
+  )
+  select g, 'expense', 'TV da sala', 21000, case when n = 1 then 'paid' else 'pending' end::public.transaction_status,
+         (m + 14 + make_interval(months => n - 1))::date,
+         (select id from public.categories where user_id = g and name = 'Compras'), credito,
+         grupo, n, 10
+  from generate_series(1, 10) as n;
 end;
 $$;

@@ -18,21 +18,23 @@ Next.js na Vercel (Node)
 
 ## Decisões técnicas
 
-| #   | Decisão                                               | Motivo                                                                                                                                                           |
-| --- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Next.js full-stack, sem API separada                  | Um projeto, um deploy, e tipagem do banco até a tela                                                                                                             |
-| D2  | `supabase-js` + tipos gerados, **sem ORM**            | Drizzle e Prisma conectam direto no Postgres e **ignoram o RLS**. Com o supabase-js, toda consulta passa pelas políticas do banco                                |
-| D3  | RLS em 100% das tabelas                               | O isolamento entre usuários não pode depender do front-end                                                                                                       |
-| D4  | Dinheiro como `bigint` em **centavos**                | Evita erros de arredondamento de float. A formatação acontece só na borda (`Intl.NumberFormat('pt-BR')`)                                                         |
-| D5  | **"Atrasado" é calculado**, não gravado               | Pendente ou parcial com vencimento antes de hoje é atrasado. Não precisa de job nem fica dessincronizado                                                         |
-| D6  | Parcelas são **materializadas** na criação            | Cada parcela é um lançamento normal: dá pra editar, marcar como paga e ver no mês certo                                                                          |
-| D7  | Recorrência via `pg_cron`, com janela de 3 meses      | Os previstos aparecem no dashboard sem o usuário fazer nada. A geração é idempotente                                                                             |
-| D8  | Cadastro público **desligado**                        | Só o admin convida usuários, pela API admin do Supabase (service role usada só no servidor)                                                                      |
-| D9  | Admin tem **leitura** dos dados de todos, sem escrita | Requisito do produto. Garantido pelo RLS, não pela interface                                                                                                     |
-| D10 | Fuso fixo `America/Sao_Paulo`                         | "Hoje", "mês atual" e "atrasado" são sempre calculados nesse fuso, no banco e no app                                                                             |
-| D11 | Forma de pagamento é só um **rótulo** do lançamento   | Não há faturas, saldo por conta nem transferências. O usuário lança cada gasto do cartão com categoria e forma                                                   |
-| D12 | **Cache Components desligado** no `next.config.ts`    | Toda tela depende do usuário logado e de dados que mudam a todo momento. A renderização dinâmica clássica é mais simples e é o caminho documentado pelo Supabase |
-| D13 | Papel (`role`) protegido por **privilégio de coluna** | O usuário só tem `UPDATE (full_name)` em `profiles`. Promover alguém a admin só pela service role ou pelo SQL editor                                             |
+| #   | Decisão                                                                       | Motivo                                                                                                                                                           |
+| --- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Next.js full-stack, sem API separada                                          | Um projeto, um deploy, e tipagem do banco até a tela                                                                                                             |
+| D2  | `supabase-js` + tipos gerados, **sem ORM**                                    | Drizzle e Prisma conectam direto no Postgres e **ignoram o RLS**. Com o supabase-js, toda consulta passa pelas políticas do banco                                |
+| D3  | RLS em 100% das tabelas                                                       | O isolamento entre usuários não pode depender do front-end                                                                                                       |
+| D4  | Dinheiro como `bigint` em **centavos**                                        | Evita erros de arredondamento de float. A formatação acontece só na borda (`Intl.NumberFormat('pt-BR')`)                                                         |
+| D5  | **"Atrasado" é calculado**, não gravado                                       | Pendente ou parcial com vencimento antes de hoje é atrasado. Não precisa de job nem fica dessincronizado                                                         |
+| D6  | Parcelas são **materializadas** na criação                                    | Cada parcela é um lançamento normal: dá pra editar, marcar como paga e ver no mês certo                                                                          |
+| D7  | Recorrência via `pg_cron`, com janela de 3 meses                              | Os previstos aparecem no dashboard sem o usuário fazer nada. A geração é idempotente                                                                             |
+| D8  | Cadastro público **desligado**                                                | Só o admin convida usuários, pela API admin do Supabase (service role usada só no servidor)                                                                      |
+| D9  | Admin tem **leitura** dos dados de todos, sem escrita                         | Requisito do produto. Garantido pelo RLS, não pela interface                                                                                                     |
+| D10 | Fuso fixo `America/Sao_Paulo`                                                 | "Hoje", "mês atual" e "atrasado" são sempre calculados nesse fuso, no banco e no app                                                                             |
+| D11 | Forma de pagamento é só um **rótulo** do lançamento                           | Não há faturas, saldo por conta nem transferências. O usuário lança cada gasto do cartão com categoria e forma                                                   |
+| D12 | **Cache Components desligado** no `next.config.ts`                            | Toda tela depende do usuário logado e de dados que mudam a todo momento. A renderização dinâmica clássica é mais simples e é o caminho documentado pelo Supabase |
+| D13 | Papel (`role`) protegido por **privilégio de coluna**                         | O usuário só tem `UPDATE (full_name)` em `profiles`. Promover alguém a admin só pela service role ou pelo SQL editor                                             |
+| D14 | **Parcelas calculadas em TypeScript** e gravadas num único `INSERT`           | A mesma função (`buildInstallments`) faz a prévia no formulário e a gravação: não há duas implementações para divergir. Um INSERT com várias linhas é atômico    |
+| D15 | Recorrência gerada **no banco** (`generate_recurring_transactions` + pg_cron) | Precisa rodar sozinha todo dia, sem ninguém abrir o app. Idempotente pelo índice único `(recurrence_id, due_date)`                                               |
 
 ## Estrutura de pastas
 
@@ -103,7 +105,7 @@ Next.js na Vercel (Node)
 ### Parcelamento (compras e vendas)
 
 - Entrada: valor total **ou** valor da parcela, número de parcelas (1 a 48), data da primeira parcela, intervalo (`monthly`, `biweekly` = a cada 15 dias, ou `days` = a cada N dias), categoria, forma de pagamento e, para vendas, o cliente.
-- A função SQL `create_installments(...)` cria as N linhas numa **única transação**, com o mesmo `installment_group_id`. Os vencimentos são calculados por `lib/dates.ts → installmentDueDates` (espelhado em SQL).
+- `features/transactions/installments.ts → buildInstallments` calcula valores e vencimentos (D14). A action grava as N linhas num **único INSERT**, com o mesmo `installment_group_id`. A situação escolhida vale para a 1ª parcela; as outras nascem pendentes.
 - **Arredondamento** (quando o usuário informa o total): cada parcela recebe `floor(total / n)` e o resto em centavos vai para a **primeira**. A soma sempre bate com o total.
 - **Mensal:** se o dia não existe no mês (31 em fevereiro, por exemplo), usa o último dia, e a parcela seguinte volta ao dia original.
 - Depois de criadas, **cada parcela é um lançamento independente**: dá pra mudar a data, o valor e os juros de uma só, sem afetar as outras. Excluir oferece "só esta" ou "esta e as próximas".

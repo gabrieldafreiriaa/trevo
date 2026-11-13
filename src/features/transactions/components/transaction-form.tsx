@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 import type { FormOptions } from "../queries";
 import type { StoredStatus, TransactionType } from "../status";
+import { RepeatFields } from "./repeat-fields";
 
 export type TransactionFormValues = {
   type: TransactionType;
@@ -36,6 +37,8 @@ type Props = {
   options: FormOptions;
   initial: TransactionFormValues;
   submitLabel: string;
+  /** Só no NOVO lançamento: parcelado / todo mês. */
+  allowRepeat?: boolean;
 };
 
 export function TransactionForm({
@@ -43,6 +46,7 @@ export function TransactionForm({
   options,
   initial,
   submitLabel,
+  allowRepeat = false,
 }: Props) {
   const [state, formAction, pending] = useActionState(action, {});
   const [type, setType] = useState<TransactionType>(initial.type);
@@ -54,6 +58,7 @@ export function TransactionForm({
   const [amount, setAmount] = useState(initial.amount_cents);
   const [interest, setInterest] = useState(initial.interest_cents);
   const [paid, setPaid] = useState(initial.paid_cents);
+  const [dueDate, setDueDate] = useState(initial.due_date);
   const errors = state.fieldErrors ?? {};
 
   // Só categorias ativas do tipo escolhido (+ a já usada, mesmo arquivada).
@@ -178,7 +183,8 @@ export function TransactionForm({
           id="due_date"
           name="due_date"
           type="date"
-          defaultValue={initial.due_date}
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
           required
           aria-invalid={errors.due_date ? true : undefined}
           className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
@@ -187,6 +193,15 @@ export function TransactionForm({
           <p className="text-[13px] text-destructive">{errors.due_date}</p>
         ) : null}
       </div>
+
+      {allowRepeat ? (
+        <RepeatFields
+          amountCents={amount}
+          firstDate={dueDate}
+          isIncome={isIncome}
+          errors={errors}
+        />
+      ) : null}
 
       <ChoiceChips
         name="status"
