@@ -42,7 +42,12 @@ export function ChoiceChips({
             <label
               key={o.value}
               className={cn(
-                "flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border px-4 text-sm transition-colors has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
+                "flex cursor-pointer items-center justify-center gap-2 rounded-full border text-sm transition-colors has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
+                // Em colunas o espaço é curto no celular: o texto pode quebrar em
+                // duas linhas, mas nunca é cortado.
+                columns
+                  ? "min-h-11 px-2 py-1 text-center leading-tight"
+                  : "h-11 px-4",
                 active
                   ? "border-graphite bg-graphite font-semibold text-graphite-foreground"
                   : "border-input bg-card text-foreground hover:bg-secondary",
@@ -57,7 +62,9 @@ export function ChoiceChips({
                 className="sr-only"
               />
               {o.icon}
-              <span className="truncate">{o.label}</span>
+              <span className={columns ? undefined : "truncate"}>
+                {o.label}
+              </span>
             </label>
           );
         })}

@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { KeyRound, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -95,6 +95,14 @@ export function Sidebar({
             {isAdmin ? "Administrador" : "Usuário"}
           </span>
         </div>
+        <Link
+          href="/definir-senha"
+          aria-label="Trocar senha"
+          title="Trocar senha"
+          className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
+        >
+          <KeyRound className="size-[18px]" aria-hidden />
+        </Link>
         <form action={signOut}>
           <button
             type="submit"

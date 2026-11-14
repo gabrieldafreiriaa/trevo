@@ -1,4 +1,4 @@
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight, KeyRound, LogOut } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -67,6 +67,15 @@ export default async function MaisPage() {
           </Link>
         ))}
       </nav>
+
+      <Link
+        href="/definir-senha"
+        className="flex h-14 items-center gap-3 rounded-card border bg-card px-4 hover:bg-secondary"
+      >
+        <KeyRound className="size-5 text-muted-foreground" aria-hidden />
+        <span className="flex-1 text-[15px]">Trocar senha</span>
+        <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+      </Link>
 
       <form action={signOut}>
         <button
