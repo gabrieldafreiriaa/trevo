@@ -28,6 +28,8 @@
   --border: #e6e8e4;
   --input: #dce0da;
   --ring: #22c55e;
+  /* Contorno de foco do teclado: contraste ≥ 3:1 sobre fundo e card. */
+  --focus: #15803d;
   --divider: #f0f2ee;
 
   --graphite: #16181a;
@@ -71,6 +73,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-focus: var(--focus);
   --color-divider: var(--divider);
 
   --color-graphite: var(--graphite);

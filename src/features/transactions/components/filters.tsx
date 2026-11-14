@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { FormOptions } from "../queries";
 
 const selectClass =
-  "h-10 min-w-0 cursor-pointer rounded-full border border-input bg-card px-3.5 pr-8 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
+  "h-11 min-w-0 cursor-pointer rounded-full lg:h-10 border border-input bg-card px-3.5 pr-8 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-focus";
 
 /** Filtros da lista: tudo fica na URL, então dá para voltar e compartilhar. */
 export function TransactionFilters({ options }: { options: FormOptions }) {
@@ -46,7 +46,7 @@ export function TransactionFilters({ options }: { options: FormOptions }) {
             aria-pressed={tipo === value}
             onClick={() => set("tipo", value)}
             className={cn(
-              "h-8 cursor-pointer rounded-full px-3.5 text-sm font-medium",
+              "h-10 cursor-pointer rounded-full px-3.5 text-sm font-medium lg:h-8",
               tipo === value
                 ? "bg-card shadow-[0_0_0_1px_var(--border)]"
                 : "text-muted-foreground",
@@ -113,7 +113,7 @@ export function TransactionFilters({ options }: { options: FormOptions }) {
             if (mes) next.set("mes", mes);
             router.replace(`${pathname}?${next.toString()}`, { scroll: false });
           }}
-          className="inline-flex h-10 cursor-pointer items-center gap-1 rounded-full px-3 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex h-11 cursor-pointer items-center gap-1 rounded-full px-3 text-sm text-muted-foreground hover:text-foreground lg:h-10"
         >
           <X className="size-4" aria-hidden />
           Limpar

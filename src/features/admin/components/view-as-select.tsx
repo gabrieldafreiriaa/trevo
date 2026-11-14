@@ -35,7 +35,7 @@ export function ViewAsSelect({ selfId, ownerId, people }: Props) {
             await setViewAs(id === selfId ? null : id);
           });
         }}
-        className="h-11 w-full cursor-pointer rounded-lg border border-input bg-card px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-60"
+        className="h-11 w-full cursor-pointer rounded-lg border border-input bg-card px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-focus disabled:opacity-60"
       >
         {people.map((p) => (
           <option key={p.id} value={p.id}>

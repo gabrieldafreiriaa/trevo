@@ -162,7 +162,7 @@ export function SaleForm({
             type="date"
             value={firstDate}
             onChange={(e) => setFirstDate(e.target.value)}
-            className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
+            className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30"
           />
           {errors.first_date ? (
             <p className="text-[13px] text-destructive">{errors.first_date}</p>
@@ -250,7 +250,7 @@ export function SaleForm({
                 type="date"
                 value={downDate}
                 onChange={(e) => setDownDate(e.target.value)}
-                className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
+                className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30"
               />
               {errors.down_date ? (
                 <p className="text-[13px] text-destructive">

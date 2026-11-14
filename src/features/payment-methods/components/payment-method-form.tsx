@@ -47,7 +47,7 @@ export function PaymentMethodForm({ action, initial, submitLabel }: Props) {
               <label
                 key={k}
                 className={cn(
-                  "flex h-12 cursor-pointer items-center gap-2.5 rounded-xl border px-3 text-sm has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+                  "flex h-12 cursor-pointer items-center gap-2.5 rounded-xl border px-3 text-sm has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
                   active
                     ? "border-graphite bg-graphite font-semibold text-graphite-foreground"
                     : "border-input bg-card text-foreground hover:bg-secondary",

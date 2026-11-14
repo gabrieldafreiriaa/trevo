@@ -183,7 +183,7 @@ export function TransactionForm({
             id="client_id"
             name="client_id"
             defaultValue={initial.client_id}
-            className="h-12 w-full cursor-pointer rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
+            className="h-12 w-full cursor-pointer rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30"
           >
             <option value="">Nenhum</option>
             {options.clients
@@ -215,7 +215,7 @@ export function TransactionForm({
           onChange={(e) => setDueDate(e.target.value)}
           required
           aria-invalid={errors.due_date ? true : undefined}
-          className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30"
+          className="h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30"
         />
         {errors.due_date ? (
           <p className="text-[13px] text-destructive">{errors.due_date}</p>

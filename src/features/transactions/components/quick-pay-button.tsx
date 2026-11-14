@@ -16,7 +16,7 @@ export function QuickPayButton({ id, label }: { id: string; label: string }) {
       onClick={() => startTransition(async () => void (await markAsPaid(id)))}
       aria-label={label}
       title={label}
-      className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-input bg-card text-xs font-semibold hover:bg-secondary disabled:opacity-50 sm:h-9 sm:w-auto sm:px-3"
+      className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-input bg-card text-xs font-semibold hover:bg-secondary disabled:opacity-50 sm:h-9 sm:w-auto sm:px-3"
     >
       <Check className="size-4 sm:size-3.5" strokeWidth={3} aria-hidden />
       <span className="hidden sm:inline">{pending ? "…" : label}</span>

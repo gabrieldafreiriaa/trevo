@@ -24,7 +24,7 @@ export function SegmentedLinks({
           href={item.href}
           aria-current={item.active ? "page" : undefined}
           className={cn(
-            "flex h-10 items-center justify-center rounded-[10px] text-sm font-semibold transition-colors",
+            "flex h-11 items-center justify-center rounded-[10px] text-sm font-semibold transition-colors",
             item.active
               ? "bg-card text-foreground shadow-[0_0_0_1px_var(--border)]"
               : "text-muted-foreground hover:text-foreground",
