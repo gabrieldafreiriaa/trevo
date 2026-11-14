@@ -4,9 +4,12 @@ Este arquivo dá contexto a assistentes de IA (e a pessoas) que vão programar n
 
 ## O projeto
 
-O Trevo é um controle financeiro pessoal para 3 usuários de uma família: Gabriel (admin), o pai e a namorada. Cada um tem login e dados próprios, e o admin pode **visualizar** os dados dos outros, sem editar. Os lançamentos são feitos à mão, com categoria e forma de pagamento.
+O Trevo é um controle financeiro pessoal para 3 usuários de uma família: Gabriel (admin), o pai e a namorada. Cada um tem login e dados próprios, e o admin pode **visualizar** os dados dos outros, sem editar. Os lançamentos são feitos à mão, com categoria e forma de pagamento. Gabriel e o pai também vendem parcelado para clientes (ex.: uma moto em 5x): essas parcelas são entradas previstas ligadas a um cliente, com juros combinados por parcela.
+
+Leia também o `AGENTS.md`, gerado pelo Next.js: esta versão (16) tem mudanças em relação ao que modelos de IA costumam conhecer. A documentação oficial da versão instalada fica em `node_modules/next/dist/docs/`. Exemplo: o `middleware.ts` agora se chama `proxy.ts`.
 
 Documentação completa:
+
 - `docs/ARCHITECTURE.md`: decisões técnicas, estrutura de pastas e convenções
 - `docs/DATA_MODEL.md`: tabelas, regras de negócio e RLS
 - `docs/ROADMAP.md`: escopo e sprints (veja qual é a sprint atual antes de começar)
@@ -14,7 +17,7 @@ Documentação completa:
 
 ## Stack
 
-Next.js (App Router) + TypeScript strict · Tailwind + shadcn/ui · Supabase (Postgres, Auth, RLS, pg_cron) via `@supabase/ssr` e `supabase-js` · React Hook Form + Zod · date-fns · Recharts · Vitest · Playwright · pnpm.
+Next.js (App Router) + TypeScript strict · Tailwind + shadcn/ui · Supabase (Postgres, Auth, RLS, pg_cron) via `@supabase/ssr` e `supabase-js` · React Hook Form + Zod · date-fns · Vitest · Playwright · pnpm.
 
 ## Comandos
 
@@ -23,12 +26,20 @@ pnpm dev            # desenvolvimento
 pnpm lint           # ESLint
 pnpm typecheck      # tsc --noEmit
 pnpm test           # Vitest
+pnpm db:test        # testes do banco (pgTAP, supabase/tests/) — precisa do Docker
+pnpm db:check       # migrations + seed + testes do banco sem Docker (PGlite)
 pnpm db:types       # regenera src/lib/supabase/database.types.ts
 supabase migration new <nome>   # nova migration
 supabase db reset               # recria o banco local com migrations + seed
 ```
 
-Antes de considerar uma tarefa pronta: `pnpm lint && pnpm typecheck && pnpm test`.
+Antes de considerar uma tarefa pronta: `pnpm lint && pnpm typecheck && pnpm test` (e `pnpm db:test` se mexeu no banco).
+
+Usuário logado: use `requireUser()` / `requireAdmin()` de `src/lib/auth/session.ts` em páginas e actions.
+
+**Toda consulta filtra por `user_id`** (`.eq("user_id", user.id)`), mesmo com RLS: para o admin, o RLS libera a leitura de todos os usuários.
+
+Nos testes pgTAP, use `pg_temp.affected($q$ ... $q$)` para contar linhas afetadas por UPDATE/DELETE (um `WITH ... UPDATE` dentro de subconsulta não é permitido no Postgres).
 
 ## Regras que não podem ser quebradas
 
