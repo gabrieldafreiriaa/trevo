@@ -116,7 +116,7 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 - [x] Tela "Usuários": listar e convidar por e-mail
 - [x] Seletor "Visualizando o painel de", com o modo somente leitura na interface
 - [x] PWA: manifest, ícones e "Adicionar à tela inicial"
-- [ ] Playwright: login, criar lançamento, criar parcelado, cadastrar venda e conferir o dashboard
+- [x] Playwright: login, criar lançamento, criar parcelado, cadastrar venda e conferir o dashboard
 - [ ] Revisão de acessibilidade (contraste, foco, alvos de 44 px) e de desempenho
 
 **Pronto quando:** o admin vê os painéis dos outros sem conseguir alterar nada, e o app instala no celular.

@@ -15,7 +15,10 @@ export function FlowCard({
   const Icon = income ? ArrowUpRight : ArrowDownRight;
   const pending = due - realized;
   return (
-    <section className="flex flex-col gap-3 rounded-card border bg-card p-5">
+    <section
+      aria-label={income ? "Entradas" : "Saídas"}
+      className="flex flex-col gap-3 rounded-card border bg-card p-5"
+    >
       <span
         aria-hidden
         className={
@@ -29,7 +32,10 @@ export function FlowCard({
       <span className="text-sm text-muted-foreground">
         {income ? "Entradas" : "Saídas"}
       </span>
-      <span className="font-display text-[26px] leading-none font-semibold tracking-[-0.8px] tabular-nums">
+      <span
+        data-testid="flow-value"
+        className="font-display text-[26px] leading-none font-semibold tracking-[-0.8px] tabular-nums"
+      >
         {formatBRL(realized)}
       </span>
       <span className="text-[13px] text-muted-foreground">
