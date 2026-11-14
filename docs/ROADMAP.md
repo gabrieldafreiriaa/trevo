@@ -123,10 +123,10 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 
 ### S8 — Produção
 
-- [ ] Projeto na Vercel conectado ao GitHub, variáveis de ambiente e preview por PR
-- [ ] Região das funções da Vercel igual à do Supabase (ex.: São Paulo, `gru1`), para cada clique não atravessar o continente
-- [ ] Migrations aplicadas no Supabase de produção e URLs de redirect do Auth configuradas
-- [ ] Domínio (opcional)
+- [x] Projeto na Vercel conectado ao GitHub, variáveis de ambiente e preview por PR
+- [x] Região das funções da Vercel igual à do Supabase (ex.: São Paulo, `gru1`), para cada clique não atravessar o continente
+- [x] Migrations aplicadas no Supabase de produção e URLs de redirect do Auth configuradas
+- [x] ~~Domínio próprio~~: dispensado, o app fica em `trevo-nu.vercel.app`
 - [ ] Convites enviados para o pai e a namorada, e acompanhamento do primeiro uso
 - [ ] Backup: confirmar a política de backup do plano do Supabase
 
