@@ -184,7 +184,7 @@ export default async function ClientePage({
                     <RowLink
                       readOnly={ctx.readOnly}
                       href={`/lancamentos/${r.id}`}
-                      className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                      className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-focus"
                     >
                       <span className="w-14 shrink-0 text-center font-display text-sm font-semibold text-muted-foreground">
                         {r.installment_number === 0

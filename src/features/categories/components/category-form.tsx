@@ -64,7 +64,7 @@ export function CategoryForm({
               <label
                 key={t}
                 className={cn(
-                  "flex h-10 cursor-pointer items-center justify-center rounded-[10px] text-sm font-semibold has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+                  "flex h-11 cursor-pointer items-center justify-center rounded-[10px] text-sm font-semibold has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
                   type === t
                     ? "bg-card text-foreground shadow-[0_0_0_1px_var(--border)]"
                     : "text-muted-foreground",
@@ -106,7 +106,7 @@ export function CategoryForm({
             <label
               key={c.value}
               title={c.label}
-              className="relative flex size-11 cursor-pointer items-center justify-center rounded-full has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50"
+              className="relative flex size-11 cursor-pointer items-center justify-center rounded-full has-focus-visible:ring-[3px] has-focus-visible:ring-focus"
               style={{ backgroundColor: c.value }}
             >
               <input
@@ -144,7 +144,7 @@ export function CategoryForm({
                 key={key}
                 title={label}
                 className={cn(
-                  "flex size-11 cursor-pointer items-center justify-center rounded-xl border has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+                  "flex size-11 cursor-pointer items-center justify-center rounded-xl border has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
                   icon === key
                     ? "border-transparent"
                     : "border-input bg-card text-muted-foreground",

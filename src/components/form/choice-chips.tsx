@@ -42,7 +42,7 @@ export function ChoiceChips({
             <label
               key={o.value}
               className={cn(
-                "flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border px-4 text-sm transition-colors has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+                "flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full border px-4 text-sm transition-colors has-focus-visible:ring-[3px] has-focus-visible:ring-focus",
                 active
                   ? "border-graphite bg-graphite font-semibold text-graphite-foreground"
                   : "border-input bg-card text-foreground hover:bg-secondary",

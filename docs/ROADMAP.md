@@ -116,14 +116,15 @@ As sprints duram **1 semana** cada. As datas são definidas no início do S0. Ca
 - [x] Tela "Usuários": listar e convidar por e-mail
 - [x] Seletor "Visualizando o painel de", com o modo somente leitura na interface
 - [x] PWA: manifest, ícones e "Adicionar à tela inicial"
-- [ ] Playwright: login, criar lançamento, criar parcelado, cadastrar venda e conferir o dashboard
-- [ ] Revisão de acessibilidade (contraste, foco, alvos de 44 px) e de desempenho
+- [x] Playwright: login, criar lançamento, criar parcelado, cadastrar venda e conferir o dashboard
+- [x] Revisão de acessibilidade (contraste, foco, alvos de 44 px) e de desempenho
 
 **Pronto quando:** o admin vê os painéis dos outros sem conseguir alterar nada, e o app instala no celular.
 
 ### S8 — Produção
 
 - [ ] Projeto na Vercel conectado ao GitHub, variáveis de ambiente e preview por PR
+- [ ] Região das funções da Vercel igual à do Supabase (ex.: São Paulo, `gru1`), para cada clique não atravessar o continente
 - [ ] Migrations aplicadas no Supabase de produção e URLs de redirect do Auth configuradas
 - [ ] Domínio (opcional)
 - [ ] Convites enviados para o pai e a namorada, e acompanhamento do primeiro uso

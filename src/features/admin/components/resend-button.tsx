@@ -18,7 +18,7 @@ export function ResendButton({ email }: { email: string }) {
             setMessage(r.error ?? r.success);
           })
         }
-        className="h-9 cursor-pointer rounded-full border border-input bg-card px-3 text-xs font-semibold hover:bg-secondary disabled:opacity-50"
+        className="h-11 cursor-pointer rounded-full border border-input bg-card px-3 text-xs font-semibold hover:bg-secondary disabled:opacity-50 lg:h-9"
       >
         {pending ? "Enviando…" : "Reenviar convite"}
       </button>

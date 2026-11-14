@@ -26,7 +26,7 @@ export function ReadOnlyBanner({ ownerName }: { ownerName: string }) {
         onClick={() =>
           startTransition(async () => void (await setViewAs(null)))
         }
-        className="h-9 cursor-pointer rounded-full bg-card px-3.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-60"
+        className="h-11 cursor-pointer rounded-full bg-card px-3.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-60 lg:h-9"
       >
         {pending ? "Voltando…" : "Voltar ao meu painel"}
       </button>

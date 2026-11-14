@@ -34,7 +34,7 @@ type Props = {
 };
 
 const dateClass =
-  "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30";
+  "h-12 w-full rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30";
 
 export function RecurrenceForm({
   action,

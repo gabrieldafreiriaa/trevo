@@ -56,17 +56,17 @@ pnpm dev                        # http://localhost:3000
 
 ### Scripts
 
-| Comando          | O que faz                                                    |
-| ---------------- | ------------------------------------------------------------ |
-| `pnpm dev`       | Servidor de desenvolvimento                                  |
-| `pnpm build`     | Build de produção                                            |
-| `pnpm lint`      | ESLint                                                       |
-| `pnpm typecheck` | `tsc --noEmit`                                               |
-| `pnpm test`      | Vitest                                                       |
-| `pnpm test:e2e`  | Playwright (a partir do S6)                                  |
-| `pnpm db:test`   | Testes do banco (RLS) com pgTAP, no Supabase local           |
-| `pnpm db:check`  | Migrations + seed + testes do banco **sem Docker** (PGlite)  |
-| `pnpm db:types`  | Gera `src/lib/supabase/database.types.ts` a partir do schema |
+| Comando          | O que faz                                                       |
+| ---------------- | --------------------------------------------------------------- |
+| `pnpm dev`       | Servidor de desenvolvimento                                     |
+| `pnpm build`     | Build de produção                                               |
+| `pnpm lint`      | ESLint                                                          |
+| `pnpm typecheck` | `tsc --noEmit`                                                  |
+| `pnpm test`      | Vitest                                                          |
+| `pnpm test:e2e`  | Playwright: precisa do banco local com o seed (`pnpm db:reset`) |
+| `pnpm db:test`   | Testes do banco (RLS) com pgTAP, no Supabase local              |
+| `pnpm db:check`  | Migrations + seed + testes do banco **sem Docker** (PGlite)     |
+| `pnpm db:types`  | Gera `src/lib/supabase/database.types.ts` a partir do schema    |
 
 ### Variáveis de ambiente
 

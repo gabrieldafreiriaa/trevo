@@ -7,10 +7,13 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:celular": "next dev -H 0.0.0.0",
+    "start:celular": "next build && next start -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
+    "test:e2e": "playwright test",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
@@ -41,6 +44,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.16",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",

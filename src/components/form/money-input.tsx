@@ -95,7 +95,7 @@ export function MoneyInput({
                   "w-[11ch] text-center font-display text-[40px] font-semibold tracking-[-1px]",
                   toneClassName,
                 )
-              : "h-12 w-full rounded-lg border border-input bg-card pr-3.5 pl-11 text-[15px] focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/30 aria-invalid:border-destructive",
+              : "h-12 w-full rounded-lg border border-input bg-card pr-3.5 pl-11 text-[15px] focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-ring/30 aria-invalid:border-destructive",
           )}
         />
         <input type="hidden" name={name} value={String(cents)} />

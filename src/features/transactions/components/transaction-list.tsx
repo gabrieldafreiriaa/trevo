@@ -64,7 +64,7 @@ export function TransactionList({ rows, options, readOnly = false }: Props) {
                   <RowLink
                     readOnly={readOnly}
                     href={`/lancamentos/${t.id}`}
-                    className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-focus"
                   >
                     <CategoryIcon
                       icon={category?.icon ?? "circle-ellipsis"}
