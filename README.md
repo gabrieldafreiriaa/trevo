@@ -2,7 +2,7 @@
 
 Controle financeiro pessoal para uso em família. Cada pessoa tem o próprio login e a própria tela. Os lançamentos são feitos à mão, e o dashboard mostra para onde o dinheiro foi e quanto ainda vai sobrar no mês.
 
-> **Status:** S0 a S6 concluídos · S7 (admin, PWA e polimento) a seguir.
+> **Status:** S0 a S7 concluídos · S8 (produção) em andamento.
 
 ## O que o Trevo faz (v1)
 
