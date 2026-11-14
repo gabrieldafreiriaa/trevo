@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SetPasswordForm } from "@/features/auth/components/set-password-form";
 import { requireUser } from "@/lib/auth/session";
 
-export const metadata: Metadata = { title: "Criar senha" };
+export const metadata: Metadata = { title: "Definir senha" };
 
 export default async function SetPasswordPage() {
   const user = await requireUser();
@@ -14,10 +15,16 @@ export default async function SetPasswordPage() {
           Olá, {user.fullName}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Crie uma senha para entrar com <strong>{user.email}</strong>.
+          Escolha uma senha para entrar com <strong>{user.email}</strong>.
         </p>
       </div>
       <SetPasswordForm />
+      <Link
+        href="/"
+        className="flex h-11 items-center self-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+      >
+        Voltar ao Trevo
+      </Link>
     </div>
   );
 }
