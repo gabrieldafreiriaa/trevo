@@ -109,4 +109,17 @@
   body {
     @apply bg-background font-sans text-foreground antialiased;
   }
+  /* iPhone: o campo de data tem largura mínima própria e vaza do container. */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    display: block;
+    /* Centraliza na vertical: altura do campo (h-12) menos a borda. */
+    line-height: calc(3rem - 2px);
+  }
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+  }
 }

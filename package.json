@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:celular": "next dev -H 0.0.0.0",
+    "start:celular": "next build && next start -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
